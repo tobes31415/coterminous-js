@@ -1,6 +1,6 @@
 {
   "name": "coterminous-js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Blurs the boundary between javascript contexts, allowing function refrences, promises, subscriptions to be passed as easily as strings numbers and all the rest",
   "main": "src/main.js",
   "dependencies": {},

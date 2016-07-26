@@ -21,6 +21,6 @@
     "test",
     "tests",
     "gulpfile.js",
-    "publish.js",
+    "publish.js"
   ]
 }
