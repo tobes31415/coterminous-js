@@ -44,107 +44,12 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__src_JsRpc_js__ = __webpack_require__(1);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__src_coterminous_js__ = __webpack_require__(2);
 
-	/* harmony default export */ exports["default"] = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__src_JsRpc_js__["a"]
+	/* harmony default export */ exports["default"] = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__src_coterminous_js__["a"]
 
 /***/ },
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js__ = __webpack_require__(3);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js___default = __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js__ && __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js__; }
-	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_0__lib_cycle_js___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js___default });
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__log_js__ = __webpack_require__(4);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__checkType_js__ = __webpack_require__(2);
-
-
-
-	var log = /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__log_js__["a"]("JsRpc");
-
-	var capabilities = {};
-
-	class JsRpc
-	{
-	    registerCapability(options)
-	    {
-	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_2__checkType_js__["a"](options, {
-	            name:"string",
-	            version: "string",
-	            
-	            onRegister: "?function",
-	            onDeregister: "?function",
-	            
-	            onCreateInterface: "?function",
-	            onDisposeInterface: "?function",
-
-	            onConnect: "?function",
-	            onDisconnect: "?function",
-	            
-	            onSend: "?function",
-	            onReceive: "?function"
-	        });
-	        
-	        var lname = options.name.toLowerCase();
-	        var lversion = options.version.toLowerCase();
-	        var versions = capabilities[lname];
-	        if (!versions)
-	        {
-	            versions = capabilities[lname]={};
-	        }
-	        if (versions.hasOwnProperty(lversion))
-	        {
-	            throw new Error(`Duplicate Registration ${lname}:${lversion}`);
-	        }
-	        try
-	        {
-	            if(options.onRegister)
-	            {
-	                options.onRegister();
-	            }
-	            versions[lversion] = options;
-	            log.trace(`Registered ${lname}:${lversion}`)
-	        }
-	        catch(err)
-	        {
-	            log.error(err);
-	            throw err;
-	        }
-	    }
-	    
-	    createInterface()
-	    {
-	        return new JsRpc_Interface();
-	    }
-	}
-	var singleton = new JsRpc();
-
-
-	class JsRpc_Interface
-	{
-	    constructor()
-	    {
-	        for(let versions of capabilities)
-	        {
-	            var sortedVersions = [];
-	            for(version in versions){sortedVersions.push(version);}
-	            sortedVersions.sort().reverse();
-	            for(let version of sortedVersions)
-	            {
-	                var options = versions[version];
-	                if (options.onCreateInterface)
-	                {
-	                    options.onCreateInterface();
-	                }
-	            }
-	        }
-	    }
-	}
-
-	/* harmony default export */ exports["a"] = singleton
-
-/***/ },
-/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* unused harmony export default *//* harmony export */ exports["a"] = assertType;/*
@@ -248,6 +153,101 @@
 	        throw new TypeError("Was expecting "+(name?name+" to match ":"")+JSON.stringify(expected));
 	    }
 	}
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js__ = __webpack_require__(3);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js___default = __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js__ && __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js__; }
+	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_0__lib_cycle_js___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js___default });
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__log_js__ = __webpack_require__(4);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__checkType_js__ = __webpack_require__(1);
+
+
+
+	var log = /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__log_js__["a"]("Coterminous");
+
+	var capabilities = {};
+
+	class Coterminous
+	{
+	    registerCapability(options)
+	    {
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_2__checkType_js__["a"](options, {
+	            name:"string",
+	            version: "string",
+	            
+	            onRegister: "?function",
+	            onDeregister: "?function",
+	            
+	            onCreateInterface: "?function",
+	            onDisposeInterface: "?function",
+
+	            onConnect: "?function",
+	            onDisconnect: "?function",
+	            
+	            onSend: "?function",
+	            onReceive: "?function"
+	        });
+	        
+	        var lname = options.name.toLowerCase();
+	        var lversion = options.version.toLowerCase();
+	        var versions = capabilities[lname];
+	        if (!versions)
+	        {
+	            versions = capabilities[lname]={};
+	        }
+	        if (versions.hasOwnProperty(lversion))
+	        {
+	            throw new Error(`Duplicate Registration ${lname}:${lversion}`);
+	        }
+	        try
+	        {
+	            if(options.onRegister)
+	            {
+	                options.onRegister();
+	            }
+	            versions[lversion] = options;
+	            log.trace(`Registered ${lname}:${lversion}`)
+	        }
+	        catch(err)
+	        {
+	            log.error(err);
+	            throw err;
+	        }
+	    }
+	    
+	    createInterface()
+	    {
+	        return new Coterminous_Interface();
+	    }
+	}
+	var singleton = new Coterminous();
+
+
+	class Coterminous_Interface
+	{
+	    constructor()
+	    {
+	        for(let versions of capabilities)
+	        {
+	            var sortedVersions = [];
+	            for(version in versions){sortedVersions.push(version);}
+	            sortedVersions.sort().reverse();
+	            for(let version of sortedVersions)
+	            {
+	                var options = versions[version];
+	                if (options.onCreateInterface)
+	                {
+	                    options.onCreateInterface();
+	                }
+	            }
+	        }
+	    }
+	}
+
+	/* harmony default export */ exports["a"] = singleton
 
 /***/ },
 /* 3 */

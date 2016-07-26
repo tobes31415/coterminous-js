@@ -1,8 +1,8 @@
 {
   "name": "coterminous-js",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Blurs the boundary between javascript contexts, allowing function refrences, promises, subscriptions to be passed as easily as strings numbers and all the rest",
-  "main": "src/main.js",
+  "main": "npm/coterminous.js",
   "dependencies": {},
   "devDependencies": {
     "gulp": "^3.9.1",

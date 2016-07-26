@@ -41,10 +41,10 @@ gulp.task('webpack-dev', function(callback){
 })
 
 gulp.task('build-npm', function(callback){
-    packFiles('./publish','./npm', 'jsrpc.js', false, callback);
+    packFiles('./publish','./npm', 'coterminous.js', false, callback);
 })
 gulp.task('build-bower', function(callback){
-    packFiles('./publish','./bower', 'jsrpc.js', false, callback);
+    packFiles('./publish','./bower', 'coterminous.js', false, callback);
 })
 
 gulp.task('build', function(done){

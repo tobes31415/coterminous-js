@@ -1,11 +1,11 @@
 import * as cycle from './lib/cycle.js';
 import logger from './log.js';
 import {assertType} from './checkType.js';
-var log = logger("JsRpc");
+var log = logger("Coterminous");
 
 var capabilities = {};
 
-class JsRpc
+class Coterminous
 {
     registerCapability(options)
     {
@@ -55,13 +55,13 @@ class JsRpc
     
     createInterface()
     {
-        return new JsRpc_Interface();
+        return new Coterminous_Interface();
     }
 }
-var singleton = new JsRpc();
+var singleton = new Coterminous();
 
 
-class JsRpc_Interface
+class Coterminous_Interface
 {
     constructor()
     {

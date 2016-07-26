@@ -1,2 +1,2 @@
-import JsRpc from './src/JsRpc.js';
-export default JsRpc;
+import Coterminous from './src/coterminous.js';
+export default Coterminous;
