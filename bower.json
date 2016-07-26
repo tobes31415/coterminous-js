@@ -1,0 +1,26 @@
+{
+  "name": "coterminous-js",
+  "description": "Blurs the boundary between javascript contexts, allowing function refrences, promises, subscriptions to be passed as easily as strings numbers and all the rest",
+  "main": "src/main.js",
+  "authors": [
+    "Jake Tober <jake@macadamian.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "webpack",
+    "es6",
+    "rpc"
+  ],
+  "homepage": "https://github.com/tobes31415/coterminous-js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "npm",
+    "src",
+    "test",
+    "tests",
+    "gulpfile.js",
+    "publish.js",
+  ]
+}
