@@ -68,10 +68,15 @@ gulp.task('build-clean', function(done){
 })
 
 gulp.task('start', function(done){
-    runSequence('build-clean', function(done){
-       gulp.src("bin").pipe(webserver({open:false})); 
+    runSequence('build-clean', 'watch',function(done){
+       gulp.src("bin").pipe(webserver({open:false, livereload:true})); 
     })  
 });
+gulp.task('watch', function(){
+    gulp.watch('./src/**/*.js',function(){
+        runSequence('build');
+    }, 10000);
+})
 
 gulp.task('publish', function(done){
     runSequence('clean', ['build-bower','build-npm'])
