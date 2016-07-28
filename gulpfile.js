@@ -32,6 +32,19 @@ function packFiles(entryFilename, outputPath, outputFilename, debug, callback)
     }
     webpack(options
     ,function(err, stats){
+        if (err)
+        {
+            console.log(err);
+            callback(err);
+            return;
+        }
+        var e = stats.compilation.errors;
+        if (e && e.length > 0)
+        {
+            e.forEach(function(e){console.log (e.message);})
+            callback("error");
+            return;
+        }
         callback(err);
     });
 }
@@ -56,7 +69,7 @@ gulp.task('build-clean', function(done){
 
 gulp.task('start', function(done){
     runSequence('build-clean', function(done){
-       gulp.src("bin").pipe(webserver({open:true})); 
+       gulp.src("bin").pipe(webserver({open:false})); 
     })  
 });
 
