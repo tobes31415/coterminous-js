@@ -6,9 +6,10 @@ export default function logger(name)
     try{isBrowser = window && window.console;}
     catch(ignored){}
 
+    var log;
     if (isBrowser)
     {
-        return {
+        log = {
             debug: window.console.debug.bind(window.console, prefix),
             warn: window.console.warn.bind(window.console, prefix),
             error: window.console.error.bind(window.console, prefix),
@@ -18,7 +19,7 @@ export default function logger(name)
     }
     else
     {
-        return {
+        log = {
             debug: console.log.bind(console, '[DEBUG]'+prefix),
             warn: console.log.bind(console, '[WARN]'+prefix),
             error: console.log.bind(console, '[ERROR]'+prefix),
@@ -26,4 +27,12 @@ export default function logger(name)
             trace: console.log.bind(console, '[TRACE]'+prefix),
         }
     }
+    if (isBrowser && !window.enableCoterminusLogs || !global.enableCoterminusLogs)
+    {
+        log.debug = function(){};
+        log.warn = log.debug;
+        log.info = log.debug;
+        log.trace = log.debug;
+    }
+    return log;
 }
