@@ -24,6 +24,7 @@ class LoopbackTransportSide
 }
 
 var cbs = Symbol("cbs");
+var lastValue = Symbol("lastValue");
 class Sub
 {
     constructor ()
@@ -35,12 +36,17 @@ class Sub
     
     _publish(obj)
     {
+        this[lastValue] = obj;
         this[cbs].forEach(function(cb){cb(obj);})
     }
     
     _subscribe(cb)
     {
         this[cbs].push(cb);
+        if(this[lastValue])
+        {
+            cb(this[lastValue]);
+        }
     }
     
     unsubscribe(cb)

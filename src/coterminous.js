@@ -3,7 +3,8 @@ import logger from './log.js';
 import {assertType} from './checkType.js';
 var log = logger("Coterminous");
 
-var capabilities = {};
+var capabilities_map = {};
+var channelCount = 1;
 
 class Coterminous
 {
@@ -14,10 +15,11 @@ export default singleton;
 
 export function registerCapability(options)
 {
-    log.debug("registering capability", options)
     assertType(options, {
         name:"string",
         version: "string",
+        
+        priority: "?number",
         
         onRegister: "?function",
         onDeregister: "?function",
@@ -34,22 +36,31 @@ export function registerCapability(options)
     
     var lname = options.name.toLowerCase();
     var lversion = options.version.toLowerCase();
-    var versions = capabilities[lname];
-    if (!versions)
-    {
-        versions = capabilities[lname]={};
-    }
-    if (versions.hasOwnProperty(lversion))
+    lname = lname.replace(/:/g,"");
+    lversion = lversion.replace(/:/g,"");
+    var fname = lname+":"+lversion;
+    if (capabilities_map.hasOwnProperty(lversion))
     {
         throw new Error(`Duplicate Registration ${lname}:${lversion}`);
+    }
+    options.name = lname;
+    options.version = lversion;
+    options.fname = fname;
+    if (!options.priority){options.priority = 50;}
+    if (options.priority < 1){options.priority=1;}
+    if (options.priority > 100){options.priority=100;}
+    
+    if (options.onSend || options.onReceive)
+    {
+        options.channel = channelCount++;
     }
     try
     {
         if(options.onRegister)
         {
-            options.onRegister(singleton);
+            options.onRegister({Coterminous:singleton});
         }
-        versions[lversion] = options;
+        capabilities_map[fname] = options;
         log.debug(`Registered ${lname}:${lversion}`)
     }
     catch(err)
@@ -61,5 +72,5 @@ export function registerCapability(options)
 
 export function getCapabilities()
 {
-    return capabilities;
+    return capabilities_map;
 }
