@@ -37,52 +37,19 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 15);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var cacheStorage = new WeakMap();
-	function getScopedCache(obj, scope)
-	{
-	    var cache = cacheStorage.get(obj);
-	    if (!cache)
-	    {
-	        cache = new WeakMap();
-	        cacheStorage.set(obj, cache);
-	    }
-	    
-	    var scoped = cache.get(scope);
-	    if (!scoped)
-	    {
-	        scoped = {};
-	        cache.set(scope, scoped);
-	    };
-	    return scoped;
-	}
-
-	/* harmony default export */ exports["a"] = function ({Coterminous, Transport, Capability})
-	{
-	    var result = {};
-	    if (Coterminous){result.App = getScopedCache(Coterminous, Capability)}
-	    if (Transport){result.Connection = getScopedCache(Transport, Capability)}
-	    return result;
-	}
-
-
-
-/***/ },
-/* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js__ = __webpack_require__(4);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js__ = __webpack_require__(6);
 	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js___default = __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js__ && __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js__; }
 	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_0__lib_cycle_js___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_0__lib_cycle_js___default });
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__log_js__ = __webpack_require__(2);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__checkType_js__ = __webpack_require__(3);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__cache_js__ = __webpack_require__(0);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__log_js__ = __webpack_require__(1);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__checkType_js__ = __webpack_require__(2);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__cache_js__ = __webpack_require__(4);
 	/* harmony export */ exports["a"] = registerCapability;/* harmony export */ exports["b"] = getCapabilities;
 
 
@@ -101,7 +68,7 @@
 
 	function registerCapability(Capability)
 	{
-	    /* harmony import */ __WEBPACK_IMPORTED_MODULE_2__checkType_js__["a"](Capability, {
+	    /* harmony import */ __WEBPACK_IMPORTED_MODULE_2__checkType_js__["a"]({
 	        name:"string",
 	        version: "string",
 	        
@@ -117,7 +84,7 @@
 	        onDeserialize:"?function",
 	        
 	        needsChannel : "?boolean"
-	    });
+	    }, Capability);
 	    
 	    var lname = Capability.name.toLowerCase();
 	    var lversion = Capability.version.toLowerCase();
@@ -161,7 +128,7 @@
 	}
 
 /***/ },
-/* 2 */
+/* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/* harmony export */ exports["a"] = logger;function logger(name)
@@ -205,19 +172,19 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 3 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* unused harmony export default *//* harmony export */ exports["a"] = assertType;/*
+	/* harmony export */ exports["b"] = checkType;/* harmony export */ exports["a"] = assertType;/*
 	 * Checks if the actual object matches the expected signiature
 	 *
 	 * Useage:
 	 *  var userObj = {}
-	 *  checkType(userObj, {"name":"string","id":"number"});
+	 *  checkType({"name":"string","id":"number"}, userObj);
 	 *  //fails
 	 *  userObj.name = "Joe";
 	 *  userObj.id = 123;
-	 *  checkType(userObj, {"name":"string","id":"number"});
+	 *  checkType({"name":"string","id":"number"}, userObj);
 	 *  //passes
 	 * 
 	 * Types supported directly:
@@ -232,13 +199,13 @@
 	 *  If the object contains the key but it's a different type it will fail
 	 *  
 	 *  var userObj = {};
-	 *  checkType(userObj, {"?name":"string","?id":"number"});
+	 *  checkType({"?name":"string","?id":"number"}, userObj);
 	 *  //passes
 	 *  userObj.name = 123;
-	 *  checkType(userObj, {"?name":"string","?id":"number"});
+	 *  checkType({"?name":"string","?id":"number"}, userObj);
 	 *  //fails
 	 */
-	function checkType(actual, expected)
+	function checkType(expected, actual)
 	{
 	    if (typeof expected==="string")
 	    {
@@ -259,14 +226,14 @@
 	            case "array":
 	                return Array.isArray(actual);
 	            case "promise":
-	                return checkType(actual, {"then":"function"});
+	                return checkType({"then":"function"}, actual);
 	            case "subscription":
-	                return checkType(actual, {"subscribe":"function","unsubscribe":"function"});
+	                return checkType({"subscribe":"function","unsubscribe":"function"}, actual);
 	            case "date":
-	                return checkType(actual, {"getTime":"function"});
+	                return checkType({"getTime":"function"}, actual);
 	            case "regex":
 	            case "regexp":
-	                return checkType(actual, {"test":"function","exec":"function"});
+	                return checkType({"test":"function","exec":"function"}, actual);
 	            case "object":
 	                return typeof actual === expected && actual !== null;
 	            default:
@@ -288,7 +255,7 @@
 	                if (typeof actual[key] === "undefined" || actual[key] === null)
 	                {continue;}
 	            }
-	            if (!checkType(actual[key], expected[key]))
+	            if (!checkType(expected[key], actual[key]))
 	            {return false;}
 	        }
 	        return true;
@@ -302,16 +269,96 @@
 	/*
 	 *  If checkType fails it throws an exception
 	 */
-	function assertType(actual, expected, name)
+	function assertType(expected, actual, name)
 	{
-	    if(!checkType(actual, expected))
+	    if(!checkType(expected, actual))
 	    {
 	        throw new TypeError("Was expecting "+(name?name+" to match ":"")+JSON.stringify(expected));
 	    }
 	}
 
 /***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	function walkObject(obj, condition, onFind)
+	{
+	    for (var key in obj)
+	    {
+	        var val = obj[key];
+	        if (condition(val))
+	        {
+	            var replace = onFind(val);
+	            if (typeof replace !== "undefined")
+	            {
+	                obj[key]=replace;
+	            }
+	        }
+	        else
+	        {
+	            if (typeof val === "object")
+	            {
+	                walkObject(val, condition, onFind);
+	            }
+	        }
+	    }
+	}
+
+	/* harmony default export */ exports["a"] = function(obj, condition, onFind)
+	{walkObject(obj, condition, onFind);}
+
+/***/ },
 /* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var cacheStorage = new WeakMap();
+	function getScopedCache(obj, scope)
+	{
+	    var cache = cacheStorage.get(obj);
+	    if (!cache)
+	    {
+	        cache = new WeakMap();
+	        cacheStorage.set(obj, cache);
+	    }
+	    
+	    var scoped = cache.get(scope);
+	    if (!scoped)
+	    {
+	        scoped = {};
+	        cache.set(scope, scoped);
+	    };
+	    return scoped;
+	}
+
+	/* harmony default export */ exports["a"] = function ({Coterminous, Transport, Capability})
+	{
+	    var result = {};
+	    if (Coterminous){result.App = getScopedCache(Coterminous, Capability)}
+	    if (Transport){result.Connection = getScopedCache(Transport, Capability)}
+	    return result;
+	}
+
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* harmony default export */ exports["a"] = class
+	{
+	    constructor ()
+	    {
+	        var self = this;
+	        var promise = new Promise(function(resolve, reject){
+	            self.resolve = resolve;
+	            self.reject = reject;
+	        });
+	        self.promise = promise;
+	    }
+	}
+
+/***/ },
+/* 6 */
 /***/ function(module, exports) {
 
 	/*
@@ -389,6 +436,7 @@
 	                !(value instanceof Date) &&
 	                !(value instanceof Number) &&
 	                !(value instanceof RegExp) &&
+	                !(value instanceof Promise) &&
 	                !(value instanceof String)
 	            ) {
 
@@ -499,48 +547,182 @@
 
 
 /***/ },
-/* 5 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__src_coterminous_js__ = __webpack_require__(1);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__src_handshaker_js__ = __webpack_require__(7);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__src_coterminous_js__ = __webpack_require__(0);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__src_handshaker_js__ = __webpack_require__(10);
 	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__src_handshaker_js___default = __WEBPACK_IMPORTED_MODULE_1__src_handshaker_js__ && __WEBPACK_IMPORTED_MODULE_1__src_handshaker_js__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_1__src_handshaker_js__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_1__src_handshaker_js__; }
 	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_1__src_handshaker_js___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_1__src_handshaker_js___default });
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__src_rootInterface_js__ = __webpack_require__(8);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__src_rootInterface_js__ = __webpack_require__(13);
 	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__src_rootInterface_js___default = __WEBPACK_IMPORTED_MODULE_2__src_rootInterface_js__ && __WEBPACK_IMPORTED_MODULE_2__src_rootInterface_js__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_2__src_rootInterface_js__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_2__src_rootInterface_js__; }
 	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_2__src_rootInterface_js___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_2__src_rootInterface_js___default });
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__src_functionPassing_js__ = __webpack_require__(9);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__src_promisePassing_js__ = __webpack_require__(11);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__src_datePassing_js__ = __webpack_require__(8);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__src_regexPassing_js__ = __webpack_require__(12);
+
+
+
+
 
 
 
 	/* harmony default export */ exports["default"] = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__src_coterminous_js__["c"]
 
 /***/ },
-/* 6 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* harmony default export */ exports["a"] = class
-	{
-	    constructor ()
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__log_js__ = __webpack_require__(1);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__coterminous_js__ = __webpack_require__(0);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__walkObject_js__ = __webpack_require__(3);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__checkType_js__ = __webpack_require__(2);
+
+
+
+
+	var log = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__log_js__["a"]("datePassing");
+	var Capability = {
+	    "name":"datePassing",
+	    "version":"0.0.1",
+	    "needsChannel":false,
+	    "onSerialize":function({Message, Cache})
 	    {
-	        var self = this;
-	        var promise = new Promise(function(resolve, reject){
-	            self.resolve = resolve;
-	            self.reject = reject;
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_2__walkObject_js__["a"](Message, /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__checkType_js__["b"].bind(null, "date"), function(date)
+	        {
+	            return {"$date":date.getTime()};
 	        });
-	        self.promise = promise;
+	    },
+	    "onDeserialize":function({Message, Cache})
+	    {
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_2__walkObject_js__["a"](Message, /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__checkType_js__["b"].bind(null, {"$date":"number"}), function(d)
+	        {
+	            return new Date(d.$date);
+	        });
 	    }
 	}
+	/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__coterminous_js__["a"](Capability);
+
+	/* unused harmony default export */ var _unused_webpack_default_export = {}
 
 /***/ },
-/* 7 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__log_js__ = __webpack_require__(2);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__coterminous_js__ = __webpack_require__(1);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__checkType_js__ = __webpack_require__(3);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__cache_js__ = __webpack_require__(0);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__subscription_js__ = __webpack_require__(9);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__lib_cycle_js__ = __webpack_require__(4);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__log_js__ = __webpack_require__(1);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__coterminous_js__ = __webpack_require__(0);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__walkObject_js__ = __webpack_require__(3);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__checkType_js__ = __webpack_require__(2);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__deferred_js__ = __webpack_require__(5);
+
+
+
+
+
+	var log = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__log_js__["a"]("functionPassing");
+
+	var fnRefIdCount = 1;
+	var Capability = {
+	    "name":"functionPassing",
+	    "version":"0.0.1",
+	    "needsChannel":true,
+	    "priority": 100,
+	    "onReceive":function({Cache, Channel, Interface, Message})
+	    {
+	        if (Message.invoke)
+	        {
+	            var fn = Cache.Connection.Local[Message.invoke];
+	            var sendResolve = function(...args){
+	                Channel.send({resolve:Message.respondTo, args:args});
+	            } 
+	            var sendReject = function(...args){
+	                Channel.send({reject:Message.respondTo, args:args});
+	            }
+	            try
+	            {  
+	                var result = fn(...Message.args);
+	                if (/* harmony import */ __WEBPACK_IMPORTED_MODULE_3__checkType_js__["b"]("promise", result))
+	                {
+	                    result.then(sendResolve, sendReject);
+	                }
+	                else
+	                {
+	                    sendResolve(result);
+	                }
+	            }
+	            catch(err)
+	            {
+	                sendReject(err);
+	            }
+	        }
+	        else if (Message.resolve)
+	        {
+	            Cache.Connection.Responses[Message.resolve].resolve(... Message.args);
+	            delete Cache.Connection.Responses[Message.resolve];
+	        }
+	        else if (Message.reject)
+	        {
+	            Cache.Connection.Responses[Message.reject].reject(... Message.args);
+	            delete Cache.Connection.Responses[Message.reject];            
+	        }
+	    },
+	    "onConnect":function({Cache, Channel})
+	    {
+	        Cache.Connection.Local = {};
+	        Cache.Connection.LocalReverse = new WeakMap();
+	        Cache.Connection.Remote = {};
+	        Cache.Connection.Channel = Channel;
+	        Cache.Connection.Responses = {};
+	    },
+	    "onSerialize":function({Message, Cache})
+	    {
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_2__walkObject_js__["a"](Message, /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__checkType_js__["b"].bind(null, "function"), function(fn)
+	        {
+	            var id;
+	            if (!Cache.Connection.LocalReverse.has(fn))
+	            {
+	                id = fnRefIdCount++;
+	                Cache.Connection.LocalReverse.set(fn,id);
+	                Cache.Connection.Local[id]=fn;
+	            }
+	            return {"$fnRef":id};
+	        });
+	    },
+	    "onDeserialize":function({Message, Cache})
+	    {
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_2__walkObject_js__["a"](Message, /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__checkType_js__["b"].bind(null, {"$fnRef":"number"}), function(fn)
+	        {
+	            if(!Cache.Connection.Remote[fn.$fnRef])
+	            {
+	                Cache.Connection.Remote[fn.$fnRef] = remoteProxy.bind(null, Cache, fn.$fnRef);
+	            }
+	            return Cache.Connection.Remote[fn.$fnRef];
+	        });
+	    }
+	}
+	/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__coterminous_js__["a"](Capability);
+	var responseIdCount = 1;
+	function remoteProxy(Cache, fnRef, ...args)
+	{
+	    var responseId = responseIdCount++;
+	    var result = Cache.Connection.Responses[responseId] = new /* harmony import */ __WEBPACK_IMPORTED_MODULE_4__deferred_js__["a"]();
+	    Cache.Connection.Channel.send({invoke:fnRef, args:args, respondTo:responseId});
+	    return result.promise;
+	}
+
+	/* unused harmony default export */ var _unused_webpack_default_export = {}
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__log_js__ = __webpack_require__(1);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__coterminous_js__ = __webpack_require__(0);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__checkType_js__ = __webpack_require__(2);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__cache_js__ = __webpack_require__(4);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__subscription_js__ = __webpack_require__(14);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__lib_cycle_js__ = __webpack_require__(6);
 	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__lib_cycle_js___default = __WEBPACK_IMPORTED_MODULE_5__lib_cycle_js__ && __WEBPACK_IMPORTED_MODULE_5__lib_cycle_js__.__esModule ? function() { return __WEBPACK_IMPORTED_MODULE_5__lib_cycle_js__['default'] } : function() { return __WEBPACK_IMPORTED_MODULE_5__lib_cycle_js__; }
 	/* harmony import */ Object.defineProperty(__WEBPACK_IMPORTED_MODULE_5__lib_cycle_js___default, 'a', { get: __WEBPACK_IMPORTED_MODULE_5__lib_cycle_js___default });
 
@@ -583,26 +765,28 @@
 	        Cache.App[TransportsSymbol] = new WeakMap();
 	        Coterminous.connectTransport = function(Transport)
 	        {
-	            return doHandshake({Coterminous,Transport, Cache});
+	            return doHandshake({Coterminous,Transport, Cache:/* harmony import */ __WEBPACK_IMPORTED_MODULE_3__cache_js__["a"]({Coterminous, Transport, Capability:HandshakerCapability})});
 	        }       
 	    } 
 	};
 	/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__coterminous_js__["a"](HandshakerCapability);
 
 
-	function processIncomingMessage({Coterminous, Transport, Message})
+	function processIncomingMessage({Coterminous, Transport, Message, Cache})
 	{
 	    try{
-	        log.debug("Processing a channled message");
 	        var cid = Message.c;
-	        var channels = /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__cache_js__["a"]({Transport, Capability:HandshakerCapability}).Connection[channelsSymbol];
+	        var channels = Cache.Connection[channelsSymbol];
 	        var channel=channels[Message.c];
 	        var Capability = channel.Capability;
 	        if (Capability.onReceive)
 	        {
 	            var TransportCache = /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__cache_js__["a"]({Transport, Capability:HandshakerCapability}).Connection;
 	            TransportCache[DeserializersSymbol].forEach(function(d){
-	               d.onDeserialize({Message:Message.m, Cache:/* harmony import */ __WEBPACK_IMPORTED_MODULE_3__cache_js__["a"]({Coterminous, Transport, Capability:d})}); 
+	               try{d.onDeserialize({Message:Message.m, Cache:/* harmony import */ __WEBPACK_IMPORTED_MODULE_3__cache_js__["a"]({Coterminous, Transport, Capability:d})});}
+	               catch(err){
+	                   log.error(`${Capability.fname} threw an Exception while Deserializing.`, err)
+	               }
 	            });
 	            
 	            Message.m = JSON.retrocycle(Message.m);
@@ -615,15 +799,37 @@
 	    catch(err){log.error("Failed to process message",err);}
 	}
 
+	var currentlyProcessing;
+	var outgoingQueue = []
 	function processOutgoingMessage({Coterminous, Transport, Message})
+	{
+	    outgoingQueue.push({Coterminous, Transport, Message});
+	    if (!currentlyProcessing)
+	    {
+	        while(outgoingQueue.length > 0)
+	        {
+	            currentlyProcessing = outgoingQueue.shift(1);
+	            _processOutgoingMessageInOrder(currentlyProcessing);
+	        }
+	        currentlyProcessing = null;
+	    }
+	}
+
+	function _processOutgoingMessageInOrder({Coterminous, Transport, Message})
 	{
 	    Message.m = JSON.decycle(Message.m);
 	    
 	    var TransportCache = /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__cache_js__["a"]({Transport, Capability:HandshakerCapability}).Connection;
 	    TransportCache[SerializersSymbol].forEach(function(s){
+	        try{
 	       s.onSerialize({Message:Message.m, Cache:/* harmony import */ __WEBPACK_IMPORTED_MODULE_3__cache_js__["a"]({Coterminous, Transport, Capability:s})}); 
+	        }
+	        catch(err)
+	        {
+	            log.error(`${Capability.fname} threw an Exception while Serializing.`, err)
+	        }
 	    });
-	    
+	    log.debug("Sending: ", JSON.stringify(Message))
 	    Transport.send(Message);
 	}
 
@@ -631,13 +837,13 @@
 
 	function doHandshake({Coterminous, Transport, Cache})
 	{
-	    /* harmony import */ __WEBPACK_IMPORTED_MODULE_2__checkType_js__["a"](Transport, 
+	    /* harmony import */ __WEBPACK_IMPORTED_MODULE_2__checkType_js__["a"]( 
 	    {
 	        send:"function",
 	        receive:"subscription",
 	        disconnect:"function",
 	        disconnected:"subscription"
-	    })
+	    }, Transport)
 	    
 	    if(Cache.App[TransportsSymbol].has(Transport))
 	    {
@@ -647,7 +853,6 @@
 	    
 	    var result = new Promise(function(resolve, reject)
 	    {
-	        log.debug("handshake beginning");
 	        var capabilities = {};
 	        var temp = /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__coterminous_js__["b"]();
 	        for(let name in temp)
@@ -667,16 +872,14 @@
 	            try
 	            {
 	                if (msg.c && msg.c !== 0){return;}
-	                log.debug("received a reply");
+	                var channels = Cache.Connection[channelsSymbol]={};
 	                Transport.receive.unsubscribe(processHandshakeMessage);
-	                Transport.receive.clear();
 	                Transport.receive.subscribe(function(Message){
-	                    processIncomingMessage({Coterminous, Transport, Message})
+	                    processIncomingMessage({Coterminous, Transport, Message, Cache})
 	                });
 	                var mine = Object.keys(temp);
 	                var theirs = Object.keys(msg);
 	                var both = mine.filter(function(k){return theirs.indexOf(k)!=-1;});
-	                log.debug("mine", mine, "theirs", theirs, "both", both);
 	                var versionCheck = {};
 	                var selected = {};
 	                for(let name of both)
@@ -696,8 +899,6 @@
 	                }
 	                sorted.sort(function(c1,c2){return compare(c1.priority, c2.priority);});
 	                log.debug("The following capabilities have been selected", sorted);
-	                var TransportCache = /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__cache_js__["a"]({Transport, Capability:HandshakerCapability}).Connection;
-	                var channels = TransportCache[channelsSymbol]={};
 	                var serializers = [];
 	                var deserializers = [];
 	                sorted.forEach(function(capability)
@@ -714,7 +915,7 @@
 	                    }
 	                    if (capability.onDeserialize)
 	                    {
-	                        deserializers.push(onDeserialize);
+	                        deserializers.push(capability);
 	                    }
 	                    if (capability.onConnect)
 	                    {
@@ -722,9 +923,8 @@
 	                    }
 	                });
 	                deserializers = deserializers.reverse();
-	                TransportCache[SerializersSymbol] = serializers;
-	                TransportCache[DeserializersSymbol]= deserializers;
-	                log.debug("handshaking complete");
+	                Cache.Connection[SerializersSymbol] = serializers;
+	                Cache.Connection[DeserializersSymbol]= deserializers;
 	                resolve();
 	            }
 	            catch(err)
@@ -753,19 +953,136 @@
 	    
 	    //sends a message, using the full stack to serialize it, returns a promise
 	    send(msg){
-	        log.debug("Sending ", msg, "on Remote Channel ", this.RemoteChannelId);
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_2__checkType_js__["a"]("object", msg, "msg");
 	        processOutgoingMessage({Coterminous:this.Coterminous, Transport:this.Transport, Message:{c:this.RemoteChannelId, m:msg}});
 	    }
 	}
 
 /***/ },
-/* 8 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__log_js__ = __webpack_require__(2);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__cache_js__ = __webpack_require__(0);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__coterminous_js__ = __webpack_require__(1);
-	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__deferred_js__ = __webpack_require__(6);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__log_js__ = __webpack_require__(1);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__coterminous_js__ = __webpack_require__(0);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__walkObject_js__ = __webpack_require__(3);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__checkType_js__ = __webpack_require__(2);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__deferred_js__ = __webpack_require__(5);
+
+
+
+
+
+	var log = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__log_js__["a"]("promisePassing");
+	var promiseRefIdCount = 1;
+	var Capability = {
+	    "name":"promisePassing",
+	    "version":"0.0.1",
+	    "needsChannel":true,
+	    "onReceive":function({Cache, Channel, Interface, Message})
+	    {
+	        if (Message.resolve)
+	        {
+	            Cache.Connection.Remote[Message.resolve].resolve(... Message.args);
+	            delete Cache.Connection.Remote[Message.resolve];
+	        }
+	        else if (Message.reject)
+	        {
+	            Cache.Connection.Remote[Message.reject].reject(... Message.args);
+	            delete Cache.Connection.Remote[Message.reject];            
+	        }
+	    },
+	    "onConnect":function({Cache, Channel})
+	    {
+	        Cache.Connection.LocalReverse = new WeakMap();
+	        Cache.Connection.Remote = {};
+	        Cache.Connection.Channel = Channel;
+	    },
+	    "onSerialize":function({Message, Cache})
+	    {
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_2__walkObject_js__["a"](Message, /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__checkType_js__["b"].bind(null, "promise"), function(promise)
+	        {
+	            var id;
+	            if (!Cache.Connection.LocalReverse.has(promise))
+	            {
+	                id = promiseRefIdCount++;
+	                Cache.Connection.LocalReverse.set(promise,id);
+	                promise.then(sendResult.bind(null, Cache, id, true), sendResult.bind(null, Cache, id, false));
+	            }
+	            return {"$promise":id};
+	        });
+	    },
+	    "onDeserialize":function({Message, Cache})
+	    {
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_2__walkObject_js__["a"](Message, /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__checkType_js__["b"].bind(null, {"$promise":"number"}), function(p)
+	        {
+	            if(!Cache.Connection.Remote[p.$promise])
+	            {
+	                Cache.Connection.Remote[p.$promise] = new /* harmony import */ __WEBPACK_IMPORTED_MODULE_4__deferred_js__["a"]();
+	            }
+	            return Cache.Connection.Remote[p.$promise].promise;
+	        });
+	    }
+	}
+	/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__coterminous_js__["a"](Capability);
+
+	function sendResult(Cache, promiseRef, isResolve, ...args)
+	{
+	    if (isResolve)
+	    {
+	        Cache.Connection.Channel.send({resolve:promiseRef, args:args});
+	    }
+	    else
+	    {
+	        Cache.Connection.Channel.send({reject:promiseRef, args:args});
+	    }
+	}
+
+	/* unused harmony default export */ var _unused_webpack_default_export = {}
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__log_js__ = __webpack_require__(1);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__coterminous_js__ = __webpack_require__(0);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__walkObject_js__ = __webpack_require__(3);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__checkType_js__ = __webpack_require__(2);
+
+
+
+
+	var log = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__log_js__["a"]("regexPassing");
+	var Capability = {
+	    "name":"regexPassing",
+	    "version":"0.0.1",
+	    "needsChannel":false,
+	    "onSerialize":function({Message, Cache})
+	    {
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_2__walkObject_js__["a"](Message, /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__checkType_js__["b"].bind(null, "regex"), function(regex)
+	        {
+	            return {"$regex":regex.source, "flags":regex.flags};
+	        });
+	    },
+	    "onDeserialize":function({Message, Cache})
+	    {
+	        /* harmony import */ __WEBPACK_IMPORTED_MODULE_2__walkObject_js__["a"](Message, /* harmony import */ __WEBPACK_IMPORTED_MODULE_3__checkType_js__["b"].bind(null, {"$regex":"string", "flags":"string"}), function(r)
+	        {
+	            return new RegExp(r.$regex, r.flags);
+	        });
+	    }
+	}
+	/* harmony import */ __WEBPACK_IMPORTED_MODULE_1__coterminous_js__["a"](Capability);
+
+	/* unused harmony default export */ var _unused_webpack_default_export = {}
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__log_js__ = __webpack_require__(1);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__cache_js__ = __webpack_require__(4);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__coterminous_js__ = __webpack_require__(0);
+	/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__deferred_js__ = __webpack_require__(5);
 
 
 
@@ -781,10 +1098,8 @@
 	    "needsChannel":true,
 	    "onRegister":function({Coterminous, Cache})
 	    {
-	        log.debug("onRegister");
 	        Coterminous.connect = function(Transport)
 	        {
-	            log.debug("Coterminous.connect");
 	            return Coterminous.connectTransport(Transport).then(function()
 	            {
 	                var Cache = /* harmony import */ __WEBPACK_IMPORTED_MODULE_1__cache_js__["a"]({Transport, Capability});
@@ -795,26 +1110,21 @@
 	        }
 	        Coterminous.root = function(newObjRoot)
 	        {
-	            log.debug("Coterminous.root", newObjRoot);
 	            Cache.App[rootObjectSymbol] = newObjRoot;
 	        }
 	    },
 	    "onConnect":function({Cache, Channel})
 	    {
-	        log.debug("onConnect");
 	        Cache.Connection[channelSymbol]=Channel;
 	    },
 	    "onReceive":function({Cache, Channel, Message})
 	    {
-	        log.debug("onReceive", Message);
 	        if (Message.sendRoot)
 	        {
-	            log.debug("Responding to root request")
 	            Channel.send(Cache.App[rootObjectSymbol]);
 	        }
 	        else
 	        {
-	            log.debug("Received a remote root ", Message)
 	            Cache.Connection[remoteRootPromise].resolve(Message);
 	        }
 	    }
@@ -822,7 +1132,7 @@
 	/* harmony import */ __WEBPACK_IMPORTED_MODULE_2__coterminous_js__["a"](Capability);
 
 /***/ },
-/* 9 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var cbs = Symbol("cbs");
@@ -850,10 +1160,10 @@
 	}
 
 /***/ },
-/* 10 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(5);
+	module.exports = __webpack_require__(7);
 
 
 /***/ }
