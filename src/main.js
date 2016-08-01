@@ -8,6 +8,7 @@ import * as handshaker from './handshaker.js';
 import * as rootInterface from './rootInterface.js';
 import * as functionPassing from './functionPassing.js';
 import * as promisePassing from './promisePassing.js';
+import * as datePassing from './datePassing.js';
 
 var log = logger("main.js");
 
