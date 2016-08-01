@@ -5,6 +5,7 @@ var log = logger("SimpleMsg");
 var Capability = {
     "name":"simpleMsg",
     "version":"0.0.1",
+    "needsChannel":true,
     "onConnect":function({Cache, Channel})
     {
         log.debug("onConnect");
