@@ -76,7 +76,7 @@ function processMessage({Coterminous, Interface, Transport, Message})
             {
                 if (c.onReceive)
                 {
-                    c.onReceive({Coterminous, Interface, Transport, Channel:Interface[channelsSymbol].get(c), Message:Message.m})
+                    c.onReceive({Coterminous, Interface, Transport, Channel:Interface[channelsSymbol].get(c), Message:Message.m, Cache:getAllCaches({Coterminous, Interface, Transport, Capability:c})})
                 }
                 return;                
             }

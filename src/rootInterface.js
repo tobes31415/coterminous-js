@@ -1,9 +1,11 @@
 import logger from './log.js';
 import getAllCaches from './cache.js';
 import {registerCapability} from './coterminous.js';
+import Deferred from './deferred.js'
 var log = logger("Coterminus-rootInterface");
 
-var rootObject = Symbol("rootObject");
+var remoteRootPromise = Symbol("remoteRootPromise");
+var rootObjectSymbol = Symbol("rootObjectSymbol");
 var channelSymbol = Symbol("channel");
 var Capability = {
     "name":"root",
@@ -18,7 +20,9 @@ var Capability = {
             return Interface.connect(transport).then(function()
             {
                 var Cache = getAllCaches({Interface, Capability});
-                return Cache.Interface[channelSymbol].send({"sendRoot":true});
+                Cache.Interface[remoteRootPromise] = new Deferred();
+                Cache.Interface[channelSymbol].send({"sendRoot":true});
+                return Cache.Interface[remoteRootPromise].promise;
             })
         }
     },
@@ -28,7 +32,7 @@ var Capability = {
         Interface.root = function(newObjRoot)
         {
             log.debug("Interface.root", newObjRoot);
-            Cache.Interface[rootObject] = newObjRoot;
+            Cache.Interface[rootObjectSymbol] = newObjRoot;
         }
     },
     "onConnect":function({Cache, Interface, Channel})
@@ -37,17 +41,18 @@ var Capability = {
         Cache.Interface[channelSymbol]=Channel;
         
     },
-    "onReceive":function({Channel, Message})
+    "onReceive":function({Cache, Channel, Interface, Message})
     {
         log.debug("onReceive", Message);
         if (Message.sendRoot)
         {
             log.debug("Responding to root request")
-            Channel.send(rootObject);
+            Channel.send(Cache.Interface[rootObjectSymbol]);
         }
         else
         {
             log.debug("Received a remote root ", Message)
+            Cache.Interface[remoteRootPromise].resolve(Message);
         }
     }
 }

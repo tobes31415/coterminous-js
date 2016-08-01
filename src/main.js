@@ -18,3 +18,7 @@ myInterface.root({hello:"world",test:function(){return 123;}})
 myInterface.connect(l.A);
 
 var remoteInterface = Coterminous.connect(l.B);
+
+remoteInterface.then(function(ri){
+    log.debug(ri.hello);
+});
