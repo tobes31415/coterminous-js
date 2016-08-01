@@ -72,7 +72,23 @@ function processIncomingMessage({Coterminous, Transport, Message, Cache})
     catch(err){log.error("Failed to process message",err);}
 }
 
+var currentlyProcessing;
+var outgoingQueue = []
 function processOutgoingMessage({Coterminous, Transport, Message})
+{
+    outgoingQueue.push({Coterminous, Transport, Message});
+    if (!currentlyProcessing)
+    {
+        while(outgoingQueue.length > 0)
+        {
+            currentlyProcessing = outgoingQueue.shift(1);
+            _processOutgoingMessageInOrder(currentlyProcessing);
+        }
+        currentlyProcessing = null;
+    }
+}
+
+function _processOutgoingMessageInOrder({Coterminous, Transport, Message})
 {
     Message.m = JSON.decycle(Message.m);
     
