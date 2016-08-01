@@ -1,6 +1,6 @@
 {
   "name": "coterminous-js",
-  "description": "Blurs the boundary between javascript contexts, allowing function refrences, promises, subscriptions to be passed as easily as strings numbers and all the rest",
+  "description": "Blurs the boundary between javascript contexts, allowing functions, promises, subscriptions to be passed like primitives",
   "main": "bower/coterminous.js",
   "authors": [
     "Jake Tober <jake@macadamian.com>"
