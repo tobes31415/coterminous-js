@@ -87,7 +87,7 @@ function processOutgoingMessage({Coterminous, Transport, Message})
             log.error(`${Capability.fname} threw an Exception while Serializing.`, err)
         }
     });
-    
+    log.debug("Sending this message via transport", JSON.stringify(Message))
     Transport.send(Message);
 }
 
@@ -176,7 +176,7 @@ function doHandshake({Coterminous, Transport, Cache})
                     }
                     if (capability.onDeserialize)
                     {
-                        deserializers.push(onDeserialize);
+                        deserializers.push(capability);
                     }
                     if (capability.onConnect)
                     {
@@ -215,6 +215,7 @@ class Channel
     
     //sends a message, using the full stack to serialize it, returns a promise
     send(msg){
+        assertType(msg, "object");
         log.debug("Sending ", msg, "on Remote Channel ", this.RemoteChannelId);
         processOutgoingMessage({Coterminous:this.Coterminous, Transport:this.Transport, Message:{c:this.RemoteChannelId, m:msg}});
     }

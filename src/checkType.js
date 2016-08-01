@@ -99,3 +99,8 @@ export function assertType(actual, expected, name)
         throw new TypeError("Was expecting "+(name?name+" to match ":"")+JSON.stringify(expected));
     }
 }
+
+export function checkTypeCurryable(expected, actual)
+{
+    return checkType(actual, expected);
+}

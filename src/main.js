@@ -7,6 +7,7 @@ import loopback from './loopback.js';
 import * as handshaker from './handshaker.js';
 import * as rootInterface from './rootInterface.js';
 import * as simpleMsg from './simpleMsg.js';
+import * as functionPassing from './functionPassing.js';
 
 var log = logger("main.js");
 
@@ -18,7 +19,5 @@ var myInterface = Coterminous.connect(l.A);
 var remoteInterface = Coterminous.connect(l.B);
 
 remoteInterface.then(function(ri){
-    log.debug(ri.hello);
-    
-    //remoteInterface.simpleMsg("123");
+    window.ri = ri;
 });

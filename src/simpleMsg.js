@@ -8,20 +8,15 @@ var Capability = {
     "needsChannel":true,
     "onConnect":function({Cache, Channel})
     {
-        log.debug("onConnect");
         window.simpleMsg = function(Message)
         {
-            Channel.send(Message);
+            Channel.send({m:Message});
         }
     },
     "onReceive":function({Cache, Channel, Interface, Message})
     {
-        log.debug("onReceive", Message);
-    },
-    "onSerialize":function({Message})
-    {
-        log.debug("Serializing!");
-        Message.foo = 123;
+        log.debug("onReceive", Message.m);
+        window.simpleMsgLast = Message.m;
     }
 }
 registerCapability(Capability);
