@@ -13,10 +13,8 @@ var Capability = {
     "needsChannel":true,
     "onRegister":function({Coterminous, Cache})
     {
-        log.debug("onRegister");
         Coterminous.connect = function(Transport)
         {
-            log.debug("Coterminous.connect");
             return Coterminous.connectTransport(Transport).then(function()
             {
                 var Cache = getAllCaches({Transport, Capability});
@@ -27,26 +25,21 @@ var Capability = {
         }
         Coterminous.root = function(newObjRoot)
         {
-            log.debug("Coterminous.root", newObjRoot);
             Cache.App[rootObjectSymbol] = newObjRoot;
         }
     },
     "onConnect":function({Cache, Channel})
     {
-        log.debug("onConnect");
         Cache.Connection[channelSymbol]=Channel;
     },
     "onReceive":function({Cache, Channel, Message})
     {
-        log.debug("onReceive", Message);
         if (Message.sendRoot)
         {
-            log.debug("Responding to root request")
             Channel.send(Cache.App[rootObjectSymbol]);
         }
         else
         {
-            log.debug("Received a remote root ", Message)
             Cache.Connection[remoteRootPromise].resolve(Message);
         }
     }

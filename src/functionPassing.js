@@ -12,7 +12,6 @@ var Capability = {
     "needsChannel":true,
     "onReceive":function({Cache, Channel, Interface, Message})
     {
-        log.debug("onReceive", Message);
         if (Message.invoke)
         {
             var fn = Cache.Connection.Local[Message.invoke];
@@ -60,7 +59,6 @@ var Capability = {
     },
     "onSerialize":function({Message, Cache})
     {
-        log.debug("Serializing!");
         walkObject(Message, checkTypeCurryable.bind(null, "function"), function(fn)
         {
             var id;
@@ -70,23 +68,16 @@ var Capability = {
                 Cache.Connection.LocalReverse.set(fn,id);
                 Cache.Connection.Local[id]=fn;
             }
-            log.debug(`Replacing fn with fnRef#${id}`)
             return {"$fnRef":id};
         });
     },
     "onDeserialize":function({Message, Cache})
     {
-        log.debug("Deserializing!");
         walkObject(Message, checkTypeCurryable.bind(null, {"$fnRef":"number"}), function(fn)
         {
             if(!Cache.Connection.Remote[fn.$fnRef])
             {
-                log.debug(`Creating proxy for fnRef#${fn.$fnRef}`)
                 Cache.Connection.Remote[fn.$fnRef] = remoteProxy.bind(null, Cache, fn.$fnRef);
-            }
-            else
-            {
-                log.debug(`Reusing existing proxy for fnRef#${fn.$fnRef}`)
             }
             return Cache.Connection.Remote[fn.$fnRef];
         });

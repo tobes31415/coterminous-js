@@ -48,7 +48,6 @@ registerCapability(HandshakerCapability);
 function processIncomingMessage({Coterminous, Transport, Message, Cache})
 {
     try{
-        log.debug("Processing a channled message");
         var cid = Message.c;
         var channels = Cache.Connection[channelsSymbol];
         var channel=channels[Message.c];
@@ -87,7 +86,7 @@ function processOutgoingMessage({Coterminous, Transport, Message})
             log.error(`${Capability.fname} threw an Exception while Serializing.`, err)
         }
     });
-    log.debug("Sending this message via transport", JSON.stringify(Message))
+    log.debug("Sending: ", JSON.stringify(Message))
     Transport.send(Message);
 }
 
@@ -111,7 +110,6 @@ function doHandshake({Coterminous, Transport, Cache})
     
     var result = new Promise(function(resolve, reject)
     {
-        log.debug("handshake beginning");
         var capabilities = {};
         var temp = getCapabilities();
         for(let name in temp)
@@ -131,7 +129,6 @@ function doHandshake({Coterminous, Transport, Cache})
             try
             {
                 if (msg.c && msg.c !== 0){return;}
-                log.debug("received a reply");
                 var channels = Cache.Connection[channelsSymbol]={};
                 Transport.receive.unsubscribe(processHandshakeMessage);
                 Transport.receive.subscribe(function(Message){
@@ -140,7 +137,6 @@ function doHandshake({Coterminous, Transport, Cache})
                 var mine = Object.keys(temp);
                 var theirs = Object.keys(msg);
                 var both = mine.filter(function(k){return theirs.indexOf(k)!=-1;});
-                log.debug("mine", mine, "theirs", theirs, "both", both);
                 var versionCheck = {};
                 var selected = {};
                 for(let name of both)
@@ -186,7 +182,6 @@ function doHandshake({Coterminous, Transport, Cache})
                 deserializers = deserializers.reverse();
                 Cache.Connection[SerializersSymbol] = serializers;
                 Cache.Connection[DeserializersSymbol]= deserializers;
-                log.debug("handshaking complete");
                 resolve();
             }
             catch(err)
@@ -215,8 +210,7 @@ class Channel
     
     //sends a message, using the full stack to serialize it, returns a promise
     send(msg){
-        assertType(msg, "object");
-        log.debug("Sending ", msg, "on Remote Channel ", this.RemoteChannelId);
+        assertType(msg, "object", "msg");
         processOutgoingMessage({Coterminous:this.Coterminous, Transport:this.Transport, Message:{c:this.RemoteChannelId, m:msg}});
     }
 }
