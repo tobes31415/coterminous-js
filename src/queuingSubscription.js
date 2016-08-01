@@ -27,8 +27,9 @@ export default class
         this[cbs].push(cb);
         if(this[lastValue])
         {
-            this[lastValue].forEach(cb);
+            var temp = this[lastValue];
             delete this[lastValue];
+            temp.forEach(cb);
         }
     }
     

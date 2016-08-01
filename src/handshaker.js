@@ -38,26 +38,29 @@ var HandshakerCapability = {
         Cache.App[TransportsSymbol] = new WeakMap();
         Coterminous.connectTransport = function(Transport)
         {
-            return doHandshake({Coterminous,Transport, Cache});
+            return doHandshake({Coterminous,Transport, Cache:getAllCaches({Coterminous, Transport, Capability:HandshakerCapability})});
         }       
     } 
 };
 registerCapability(HandshakerCapability);
 
 
-function processIncomingMessage({Coterminous, Transport, Message})
+function processIncomingMessage({Coterminous, Transport, Message, Cache})
 {
     try{
         log.debug("Processing a channled message");
         var cid = Message.c;
-        var channels = getAllCaches({Transport, Capability:HandshakerCapability}).Connection[channelsSymbol];
+        var channels = Cache.Connection[channelsSymbol];
         var channel=channels[Message.c];
         var Capability = channel.Capability;
         if (Capability.onReceive)
         {
             var TransportCache = getAllCaches({Transport, Capability:HandshakerCapability}).Connection;
             TransportCache[DeserializersSymbol].forEach(function(d){
-               d.onDeserialize({Message:Message.m, Cache:getAllCaches({Coterminous, Transport, Capability:d})}); 
+               try{d.onDeserialize({Message:Message.m, Cache:getAllCaches({Coterminous, Transport, Capability:d})});}
+               catch(err){
+                   log.error(`${Capability.fname} threw an Exception while Deserializing.`, err)
+               }
             });
             
             Message.m = JSON.retrocycle(Message.m);
@@ -76,7 +79,13 @@ function processOutgoingMessage({Coterminous, Transport, Message})
     
     var TransportCache = getAllCaches({Transport, Capability:HandshakerCapability}).Connection;
     TransportCache[SerializersSymbol].forEach(function(s){
+        try{
        s.onSerialize({Message:Message.m, Cache:getAllCaches({Coterminous, Transport, Capability:s})}); 
+        }
+        catch(err)
+        {
+            log.error(`${Capability.fname} threw an Exception while Serializing.`, err)
+        }
     });
     
     Transport.send(Message);
@@ -123,9 +132,10 @@ function doHandshake({Coterminous, Transport, Cache})
             {
                 if (msg.c && msg.c !== 0){return;}
                 log.debug("received a reply");
+                var channels = Cache.Connection[channelsSymbol]={};
                 Transport.receive.unsubscribe(processHandshakeMessage);
                 Transport.receive.subscribe(function(Message){
-                    processIncomingMessage({Coterminous, Transport, Message})
+                    processIncomingMessage({Coterminous, Transport, Message, Cache})
                 });
                 var mine = Object.keys(temp);
                 var theirs = Object.keys(msg);
@@ -150,8 +160,6 @@ function doHandshake({Coterminous, Transport, Cache})
                 }
                 sorted.sort(function(c1,c2){return compare(c1.priority, c2.priority);});
                 log.debug("The following capabilities have been selected", sorted);
-                var TransportCache = getAllCaches({Transport, Capability:HandshakerCapability}).Connection;
-                var channels = TransportCache[channelsSymbol]={};
                 var serializers = [];
                 var deserializers = [];
                 sorted.forEach(function(capability)
@@ -176,8 +184,8 @@ function doHandshake({Coterminous, Transport, Cache})
                     }
                 });
                 deserializers = deserializers.reverse();
-                TransportCache[SerializersSymbol] = serializers;
-                TransportCache[DeserializersSymbol]= deserializers;
+                Cache.Connection[SerializersSymbol] = serializers;
+                Cache.Connection[DeserializersSymbol]= deserializers;
                 log.debug("handshaking complete");
                 resolve();
             }
