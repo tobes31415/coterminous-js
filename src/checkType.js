@@ -3,11 +3,11 @@
  *
  * Useage:
  *  var userObj = {}
- *  checkType(userObj, {"name":"string","id":"number"});
+ *  checkType({"name":"string","id":"number"}, userObj);
  *  //fails
  *  userObj.name = "Joe";
  *  userObj.id = 123;
- *  checkType(userObj, {"name":"string","id":"number"});
+ *  checkType({"name":"string","id":"number"}, userObj);
  *  //passes
  * 
  * Types supported directly:
@@ -22,13 +22,13 @@
  *  If the object contains the key but it's a different type it will fail
  *  
  *  var userObj = {};
- *  checkType(userObj, {"?name":"string","?id":"number"});
+ *  checkType({"?name":"string","?id":"number"}, userObj);
  *  //passes
  *  userObj.name = 123;
- *  checkType(userObj, {"?name":"string","?id":"number"});
+ *  checkType({"?name":"string","?id":"number"}, userObj);
  *  //fails
  */
-export default function checkType(actual, expected)
+export function checkType(expected, actual)
 {
     if (typeof expected==="string")
     {
@@ -49,14 +49,14 @@ export default function checkType(actual, expected)
             case "array":
                 return Array.isArray(actual);
             case "promise":
-                return checkType(actual, {"then":"function"});
+                return checkType({"then":"function"}, actual);
             case "subscription":
-                return checkType(actual, {"subscribe":"function","unsubscribe":"function"});
+                return checkType({"subscribe":"function","unsubscribe":"function"}, actual);
             case "date":
-                return checkType(actual, {"getTime":"function"});
+                return checkType({"getTime":"function"}, actual);
             case "regex":
             case "regexp":
-                return checkType(actual, {"test":"function","exec":"function"});
+                return checkType({"test":"function","exec":"function"}, actual);
             case "object":
                 return typeof actual === expected && actual !== null;
             default:
@@ -78,7 +78,7 @@ export default function checkType(actual, expected)
                 if (typeof actual[key] === "undefined" || actual[key] === null)
                 {continue;}
             }
-            if (!checkType(actual[key], expected[key]))
+            if (!checkType(expected[key], actual[key]))
             {return false;}
         }
         return true;
@@ -92,15 +92,10 @@ export default function checkType(actual, expected)
 /*
  *  If checkType fails it throws an exception
  */
-export function assertType(actual, expected, name)
+export function assertType(expected, actual, name)
 {
-    if(!checkType(actual, expected))
+    if(!checkType(expected, actual))
     {
         throw new TypeError("Was expecting "+(name?name+" to match ":"")+JSON.stringify(expected));
     }
-}
-
-export function checkTypeCurryable(expected, actual)
-{
-    return checkType(actual, expected);
 }

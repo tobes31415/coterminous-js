@@ -1,7 +1,7 @@
 import logger from './log.js';
 import {registerCapability} from './coterminous.js';
 import walkObject from './walkObject.js';
-import {checkTypeCurryable} from './checkType.js';
+import {checkType} from './checkType.js';
 var log = logger("regexPassing");
 var Capability = {
     "name":"regexPassing",
@@ -9,14 +9,14 @@ var Capability = {
     "needsChannel":false,
     "onSerialize":function({Message, Cache})
     {
-        walkObject(Message, checkTypeCurryable.bind(null, "regex"), function(regex)
+        walkObject(Message, checkType.bind(null, "regex"), function(regex)
         {
             return {"$regex":regex.source, "flags":regex.flags};
         });
     },
     "onDeserialize":function({Message, Cache})
     {
-        walkObject(Message, checkTypeCurryable.bind(null, {"$regex":"string", "flags":"string"}), function(r)
+        walkObject(Message, checkType.bind(null, {"$regex":"string", "flags":"string"}), function(r)
         {
             return new RegExp(r.$regex, r.flags);
         });

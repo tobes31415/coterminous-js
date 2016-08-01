@@ -1,7 +1,7 @@
 import logger from './log.js';
 import {registerCapability} from './coterminous.js';
 import walkObject from './walkObject.js';
-import {checkTypeCurryable} from './checkType.js';
+import {checkType} from './checkType.js';
 import Deferred from './deferred.js';
 var log = logger("promisePassing");
 var promiseRefIdCount = 1;
@@ -30,7 +30,7 @@ var Capability = {
     },
     "onSerialize":function({Message, Cache})
     {
-        walkObject(Message, checkTypeCurryable.bind(null, "promise"), function(promise)
+        walkObject(Message, checkType.bind(null, "promise"), function(promise)
         {
             var id;
             if (!Cache.Connection.LocalReverse.has(promise))
@@ -44,7 +44,7 @@ var Capability = {
     },
     "onDeserialize":function({Message, Cache})
     {
-        walkObject(Message, checkTypeCurryable.bind(null, {"$promise":"number"}), function(p)
+        walkObject(Message, checkType.bind(null, {"$promise":"number"}), function(p)
         {
             if(!Cache.Connection.Remote[p.$promise])
             {

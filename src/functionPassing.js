@@ -1,7 +1,7 @@
 import logger from './log.js';
 import {registerCapability} from './coterminous.js';
 import walkObject from './walkObject.js';
-import {checkTypeCurryable} from './checkType.js';
+import {checkType} from './checkType.js';
 import Deferred from './deferred.js';
 var log = logger("functionPassing");
 
@@ -25,7 +25,7 @@ var Capability = {
             try
             {  
                 var result = fn(...Message.args);
-                if (checkTypeCurryable("promise", result))
+                if (checkType("promise", result))
                 {
                     result.then(sendResolve, sendReject);
                 }
@@ -60,7 +60,7 @@ var Capability = {
     },
     "onSerialize":function({Message, Cache})
     {
-        walkObject(Message, checkTypeCurryable.bind(null, "function"), function(fn)
+        walkObject(Message, checkType.bind(null, "function"), function(fn)
         {
             var id;
             if (!Cache.Connection.LocalReverse.has(fn))
@@ -74,7 +74,7 @@ var Capability = {
     },
     "onDeserialize":function({Message, Cache})
     {
-        walkObject(Message, checkTypeCurryable.bind(null, {"$fnRef":"number"}), function(fn)
+        walkObject(Message, checkType.bind(null, {"$fnRef":"number"}), function(fn)
         {
             if(!Cache.Connection.Remote[fn.$fnRef])
             {

@@ -16,7 +16,7 @@ export default singleton;
 
 export function registerCapability(Capability)
 {
-    assertType(Capability, {
+    assertType({
         name:"string",
         version: "string",
         
@@ -32,7 +32,7 @@ export function registerCapability(Capability)
         onDeserialize:"?function",
         
         needsChannel : "?boolean"
-    });
+    }, Capability);
     
     var lname = Capability.name.toLowerCase();
     var lversion = Capability.version.toLowerCase();

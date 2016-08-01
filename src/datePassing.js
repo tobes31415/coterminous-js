@@ -1,7 +1,7 @@
 import logger from './log.js';
 import {registerCapability} from './coterminous.js';
 import walkObject from './walkObject.js';
-import {checkTypeCurryable} from './checkType.js';
+import {checkType} from './checkType.js';
 var log = logger("datePassing");
 var Capability = {
     "name":"datePassing",
@@ -9,14 +9,14 @@ var Capability = {
     "needsChannel":false,
     "onSerialize":function({Message, Cache})
     {
-        walkObject(Message, checkTypeCurryable.bind(null, "date"), function(date)
+        walkObject(Message, checkType.bind(null, "date"), function(date)
         {
             return {"$date":date.getTime()};
         });
     },
     "onDeserialize":function({Message, Cache})
     {
-        walkObject(Message, checkTypeCurryable.bind(null, {"$date":"number"}), function(d)
+        walkObject(Message, checkType.bind(null, {"$date":"number"}), function(d)
         {
             return new Date(d.$date);
         });

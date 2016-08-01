@@ -110,13 +110,13 @@ function _processOutgoingMessageInOrder({Coterminous, Transport, Message})
 
 function doHandshake({Coterminous, Transport, Cache})
 {
-    assertType(Transport, 
+    assertType( 
     {
         send:"function",
         receive:"subscription",
         disconnect:"function",
         disconnected:"subscription"
-    })
+    }, Transport)
     
     if(Cache.App[TransportsSymbol].has(Transport))
     {
@@ -226,7 +226,7 @@ class Channel
     
     //sends a message, using the full stack to serialize it, returns a promise
     send(msg){
-        assertType(msg, "object", "msg");
+        assertType("object", msg, "msg");
         processOutgoingMessage({Coterminous:this.Coterminous, Transport:this.Transport, Message:{c:this.RemoteChannelId, m:msg}});
     }
 }
