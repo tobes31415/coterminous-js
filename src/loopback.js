@@ -1,4 +1,4 @@
-import Sub from './repeatingSubscription.js'
+import Sub from './queuingSubscription.js'
 
 /*
  * This is a simple 2-sided transport to assist in testing and development

@@ -124,7 +124,6 @@ function doHandshake({Coterminous, Transport, Cache})
                 if (msg.c && msg.c !== 0){return;}
                 log.debug("received a reply");
                 Transport.receive.unsubscribe(processHandshakeMessage);
-                Transport.receive.clear();
                 Transport.receive.subscribe(function(Message){
                     processIncomingMessage({Coterminous, Transport, Message})
                 });
