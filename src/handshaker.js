@@ -63,6 +63,29 @@ registerCapability({
 
 var channelsSymbol = Symbol("channels");
 
+function processMessage({Coterminous, Interface, Transport, Message})
+{
+    try{
+        log.debug("Processing a non-handshaking message");
+        var cid = Message.c;
+        var temp = getCapabilities();
+        for (let fname in temp)
+        {
+            var c = temp[fname];
+            if (temp[fname].channel === cid)         
+            {
+                if (c.onReceive)
+                {
+                    c.onReceive({Coterminous, Interface, Transport, Channel:Interface[channelsSymbol].get(c), Message:Message.m})
+                }
+                return;                
+            }
+        }
+        throw new Error("Channel isn't registered here")
+    }
+    catch(err){log.error("Failed to process message",err);}
+}
+
 function doHandshake({Coterminous, Interface, Transport})
 {
     assertType(Transport, 
@@ -92,10 +115,14 @@ function doHandshake({Coterminous, Interface, Transport})
         Transport.send(capabilities);
         var processHandshakeMessage = function(msg)
         {
-            log.debug("received a reply");
             try
             {
+                if (msg.c && msg.c !== 0){return;}
+                log.debug("received a reply");
                 Transport.receive.unsubscribe(processHandshakeMessage);
+                Transport.receive.subscribe(function(Message){
+                    processMessage({Coterminous, Interface, Transport, Message})
+                });
                 var mine = Object.keys(temp);
                 var theirs = Object.keys(msg);
                 var both = mine.filter(function(k){return theirs.indexOf(k)!=-1;});
@@ -166,11 +193,7 @@ class Channel
     //sends a message, using the full stack to serialize it, returns a promise
     send(msg){
         channelLog.debug("Sending ", msg, "on Channel ", this[ChannelIdSymbol]);
-    }
-    
-    //sends a message, bypassing the stack, returns undefined
-    sendDirect(msg){
-        channelLog.debug("Sending ", msg, "on Channel ", this[ChannelIdSymbol], "Directly");
+        this[TransportSymbol].send({c:this[ChannelIdSymbol], m:msg})
     }
 }
 

@@ -18,7 +18,7 @@ var Capability = {
             return Interface.connect(transport).then(function()
             {
                 var Cache = getAllCaches({Interface, Capability});
-                return Cache.Interface[channelSymbol].send({});
+                return Cache.Interface[channelSymbol].send({"sendRoot":true});
             })
         }
     },
@@ -37,10 +37,18 @@ var Capability = {
         Cache.Interface[channelSymbol]=Channel;
         
     },
-    "onReceive":function({Message})
+    "onReceive":function({Channel, Message})
     {
-        log.debug("onReceive");
-        return rootObject;
+        log.debug("onReceive", Message);
+        if (Message.sendRoot)
+        {
+            log.debug("Responding to root request")
+            Channel.send(rootObject);
+        }
+        else
+        {
+            log.debug("Received a remote root ", Message)
+        }
     }
 }
 registerCapability(Capability);
