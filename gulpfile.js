@@ -9,7 +9,7 @@ gulp.task('clean', function(){
 })
 
 gulp.task('copyIndex', function(){
-    return gulp.src(["./src/index.html"]).pipe(
+    return gulp.src(["./index.html"]).pipe(
     gulp.dest("./bin"))
 });
 
@@ -29,6 +29,13 @@ function packFiles(entryFilename, outputPath, outputFilename, debug, callback)
     {
         options.debug=true,
         options.devtool='inline-source-map';
+    }
+    else
+    {
+        //Minify
+        //
+        // Uglify doesn't support ES6 yet
+        //options.plugins: [new webpack.optimize.UglifyJsPlugin()]
     }
     webpack(options
     ,function(err, stats){
@@ -50,7 +57,7 @@ function packFiles(entryFilename, outputPath, outputFilename, debug, callback)
 }
 
 gulp.task('webpack-dev', function(callback){
-    packFiles('./src/main','./bin', 'main.js', true, callback);
+    packFiles('./main','./bin', 'main.js', true, callback);
 })
 
 gulp.task('build-npm', function(callback){

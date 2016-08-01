@@ -4,6 +4,6 @@ node_modules
 src
 .gitignore
 .npmignore
-bower.json
-gulpfile.js
-publish.js
+*.json
+*.js
+*.html

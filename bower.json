@@ -20,8 +20,8 @@
     "src",
     "test",
     "tests",
-    "gulpfile.js",
-    "publish.js",
-    "bower.json"
+    "*.js",
+    "*.html",
+    "*.json"
   ]
 }
