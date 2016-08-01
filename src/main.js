@@ -7,7 +7,7 @@ import Coterminous from './coterminous.js';
 import loopback from './loopback.js';
 import * as handshaker from './handshaker.js';
 import * as rootInterface from './rootInterface.js';
-import * as simpleMsg from './rootInterface.js';
+import * as simpleMsg from './simpleMsg.js';
 
 var log = logger("main.js");
 

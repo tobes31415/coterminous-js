@@ -3,13 +3,13 @@ import {registerCapability, getCapabilities} from './coterminous.js';
 import {assertType} from './checkType.js';
 import getAllCaches from './cache.js';
 import Subcription from './subscription.js';
-import Channel from './channel.js';
 var log = logger("Coterminus-handshaker");
 
 
 var TransportsSymbol = Symbol("transports");
 var channelsSymbol = Symbol("channels");
-
+var SerializersSymbol = Symbol("serializers");
+var DeserializersSymbol = Symbol("deserializers");
 
 function tryThis(fnRef, ...args)
 {
@@ -43,22 +43,36 @@ var HandshakerCapability = {
 registerCapability(HandshakerCapability);
 
 
-function processMessage({Coterminous, Transport, Message})
+function processIncomingMessage({Coterminous, Transport, Message})
 {
     try{
-        log.debug("Processing a non-handshaking message");
+        log.debug("Processing a channled message");
         var cid = Message.c;
         var channels = getAllCaches({Transport, Capability:HandshakerCapability}).Connection[channelsSymbol];
         var channel=channels[Message.c];
         var Capability = channel.Capability;
         if (Capability.onReceive)
         {
+            var TransportCache = getAllCaches({Transport, Capability:HandshakerCapability}).Connection;
+            TransportCache[DeserializersSymbol].forEach(function(d){
+               d.onDeserialize({Message:Message.m, Cache:getAllCaches({Coterminous, Transport, Capability:d})}); 
+            });
+    
             Capability.onReceive({Message:Message.m, Channel:channel, Cache:getAllCaches({Coterminous, Transport, Capability})})
             return;                
         }
         throw new Error("Channel isn't registered here")
     }
     catch(err){log.error("Failed to process message",err);}
+}
+
+function processOutgoingMessage({Coterminous, Transport, Message})
+{
+    var TransportCache = getAllCaches({Transport, Capability:HandshakerCapability}).Connection;
+    TransportCache[SerializersSymbol].forEach(function(s){
+       s.onSerialize({Message:Message.m, Cache:getAllCaches({Coterminous, Transport, Capability:s})}); 
+    });
+    Transport.send(Message);
 }
 
 
@@ -105,7 +119,7 @@ function doHandshake({Coterminous, Transport, Cache})
                 Transport.receive.unsubscribe(processHandshakeMessage);
                 Transport.receive.clear();
                 Transport.receive.subscribe(function(Message){
-                    processMessage({Coterminous, Transport, Message})
+                    processIncomingMessage({Coterminous, Transport, Message})
                 });
                 var mine = Object.keys(temp);
                 var theirs = Object.keys(msg);
@@ -132,19 +146,32 @@ function doHandshake({Coterminous, Transport, Cache})
                 log.debug("The following capabilities have been selected", sorted);
                 var TransportCache = getAllCaches({Transport, Capability:HandshakerCapability}).Connection;
                 var channels = TransportCache[channelsSymbol]={};
+                var serializers = [];
+                var deserializers = [];
                 sorted.forEach(function(capability)
                 {
                     if (capability.channel)
                     {
-                        var channel = new Channel({Transport, LocalChannelId:capability.channel, RemoteChannelId:msg[capability.fname].c, Capability:capability});
+                        var channel = new Channel({Coterminous, Transport, LocalChannelId:capability.channel, RemoteChannelId:msg[capability.fname].c, Capability:capability});
                     
                         channels[capability.channel]=channel;
+                    }
+                    if (capability.onSerialize)
+                    {
+                        serializers.push(capability);
+                    }
+                    if (capability.onDeserialize)
+                    {
+                        deserializers.push(onDeserialize);
                     }
                     if (capability.onConnect)
                     {
                         tryThis(capability.onConnect, {Channel: channel, Cache:getAllCaches({Coterminous, Transport, Capability:capability})});
                     }
                 });
+                deserializers = deserializers.reverse();
+                TransportCache[SerializersSymbol] = serializers;
+                TransportCache[DeserializersSymbol]= deserializers;
                 log.debug("handshaking complete");
                 resolve();
             }
@@ -159,4 +186,22 @@ function doHandshake({Coterminous, Transport, Cache})
         catch(ignored){};
     });
     return result;
+}
+
+class Channel
+{
+    constructor({Coterminous, LocalChannelId, RemoteChannelId, Transport, Capability}){
+        this.Coterminous = Coterminous;
+        this.Transport = Transport;
+        this.LocalChannelId = LocalChannelId;
+        this.RemoteChannelId = RemoteChannelId;
+        this.Capability = Capability;
+        this.receive = new Subcription();
+    }
+    
+    //sends a message, using the full stack to serialize it, returns a promise
+    send(msg){
+        log.debug("Sending ", msg, "on Remote Channel ", this.RemoteChannelId);
+        processOutgoingMessage({Coterminous:this.Coterminous, Transport:this.Transport, Message:{c:this.RemoteChannelId, m:msg}});
+    }
 }

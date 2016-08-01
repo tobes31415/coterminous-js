@@ -5,10 +5,10 @@ var log = logger("SimpleMsg");
 var Capability = {
     "name":"simpleMsg",
     "version":"0.0.1",
-    "onConnect":function({Cache, Interface, Channel})
+    "onConnect":function({Cache, Channel})
     {
         log.debug("onConnect");
-        Cache.Interface.simpleMsg = function(Message)
+        window.simpleMsg = function(Message)
         {
             Channel.send(Message);
         }
@@ -16,6 +16,13 @@ var Capability = {
     "onReceive":function({Cache, Channel, Interface, Message})
     {
         log.debug("onReceive", Message);
+    },
+    "onSerialize":function({Message})
+    {
+        log.debug("Serializing!");
+        Message.foo = 123;
     }
 }
 registerCapability(Capability);
+
+export default {};
