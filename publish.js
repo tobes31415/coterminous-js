@@ -5,4 +5,5 @@ import * as functionPassing from './src/functionPassing.js';
 import * as promisePassing from './src/promisePassing.js';
 import * as datePassing from './src/datePassing.js';
 import * as regexPassing from './src/regexPassing.js';
+import * as subscriptionPassing from './src/subscriptionPassing.js';
 export default Coterminous;

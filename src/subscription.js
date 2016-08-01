@@ -1,23 +1,37 @@
-var cbs = Symbol("cbs");
+import logger from './log.js';
+var log = logger("Subscription");
+
 export default class
 {
     constructor ()
     {
-        this[cbs] = [];
-        this.publish = this._publish.bind(this);
-        this.subscribe = this._subscribe.bind(this);
+        var cbs = [];
+        this.publish = function(obj)
+        {
+            cbs.forEach(function(cb)
+            {
+                try{cb(obj);}
+                catch(err){log.error(err);}
+            });
+        }
+        this.subscribe = function(cb)
+        {
+            if (cbs.indexOf(cb) === -1)
+            {
+                cbs.push(cb);
+            }
+        }
+        this.unsubscribe = function(cb)
+        {
+            var index = cbs.indexOf(cb);
+            if (index !== -1)
+            {
+                cbs.splice(index, 1);
+            }
+        }
+        this.readOnly = {
+            subscribe: this.subscribe,
+            unsubscribe: this.unsubscribe
+        };
     }
-    
-    _publish(obj)
-    {
-        this[cbs].forEach(function(cb){cb(obj);})
-    }
-    
-    _subscribe(cb)
-    {
-        this[cbs].push(cb);
-    }
-    
-    unsubscribe(cb)
-    {}
 }
