@@ -1,25 +1,11 @@
 import logger from './log.js';
-import {registerCapability, getCapabilities} from './coterminous.js';
-import {assertType} from './checkType.js';
+import getAllCaches from './cache.js';
+import {registerCapability} from './coterminous.js';
 var log = logger("Coterminus-rootInterface");
 
-function tryThis(fnRef, ...args)
-{
-    try
-    {
-        fnRef.apply(null, ...args);
-    }
-    catch(err)
-    {
-        log.error(err);
-    }
-}
-
-function getRemoteRoot(){}
-
 var rootObject = Symbol("rootObject");
-
-registerCapability({
+var channelSymbol = Symbol("channel");
+var Capability = {
     "name":"root",
     "version":"0.0.1",
     "onRegister":function({Coterminous})
@@ -28,7 +14,12 @@ registerCapability({
         Coterminous.connect = function(transport)
         {
             log.debug("Coterminous.connect");
-            return Coterminous.createInterface().connect(transport).then(getRemoteRoot)
+            var Interface = Coterminous.createInterface();
+            return Interface.connect(transport).then(function()
+            {
+                var Cache = getAllCaches({Interface, Capability});
+                return Cache.Interface[channelSymbol].send({});
+            })
         }
     },
     "onCreateInterface":function({Interface, Cache})
@@ -40,18 +31,16 @@ registerCapability({
             Cache.Interface[rootObject] = newObjRoot;
         }
     },
-    "onConnect":function({Cache, Channel, Root, Interface})
+    "onConnect":function({Cache, Interface, Channel})
     {
         log.debug("onConnect");
-        Interface.getRoot = function()
-        {
-            log.debug("Interface.getRoot");
-            return Channel.send("rq");
-        }
+        Cache.Interface[channelSymbol]=Channel;
+        
     },
     "onReceive":function({Message})
     {
         log.debug("onReceive");
         return rootObject;
     }
-});
+}
+registerCapability(Capability);
