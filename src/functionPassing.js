@@ -10,6 +10,7 @@ var Capability = {
     "name":"functionPassing",
     "version":"0.0.1",
     "needsChannel":true,
+    "priority": 100,
     "onReceive":function({Cache, Channel, Interface, Message})
     {
         if (Message.invoke)

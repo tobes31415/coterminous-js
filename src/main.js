@@ -7,12 +7,13 @@ import loopback from './loopback.js';
 import * as handshaker from './handshaker.js';
 import * as rootInterface from './rootInterface.js';
 import * as functionPassing from './functionPassing.js';
+import * as promisePassing from './promisePassing.js';
 
 var log = logger("main.js");
 
 var l = new loopback();
 
-Coterminous.root({hello:"world",test:function(){return 123;}})
+Coterminous.root({hello:"world",test:function(){return 123;}, echo:function(arg){return arg}})
 
 var myInterface = Coterminous.connectTransport(l.A);
 var remoteInterface = Coterminous.connect(l.B);

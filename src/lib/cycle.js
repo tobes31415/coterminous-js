@@ -73,6 +73,7 @@ if (typeof JSON.decycle !== "function") {
                 !(value instanceof Date) &&
                 !(value instanceof Number) &&
                 !(value instanceof RegExp) &&
+                !(value instanceof Promise) &&
                 !(value instanceof String)
             ) {
 
