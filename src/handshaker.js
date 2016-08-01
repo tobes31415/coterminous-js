@@ -3,6 +3,8 @@ import {registerCapability, getCapabilities} from './coterminous.js';
 import {assertType} from './checkType.js';
 import getAllCaches from './cache.js';
 import Subcription from './subscription.js';
+import * as cycle from './lib/cycle.js';
+
 var log = logger("Coterminus-handshaker");
 
 
@@ -57,6 +59,8 @@ function processIncomingMessage({Coterminous, Transport, Message})
             TransportCache[DeserializersSymbol].forEach(function(d){
                d.onDeserialize({Message:Message.m, Cache:getAllCaches({Coterminous, Transport, Capability:d})}); 
             });
+            
+            Message.m = JSON.retrocycle(Message.m);
     
             Capability.onReceive({Message:Message.m, Channel:channel, Cache:getAllCaches({Coterminous, Transport, Capability})})
             return;                
@@ -68,10 +72,13 @@ function processIncomingMessage({Coterminous, Transport, Message})
 
 function processOutgoingMessage({Coterminous, Transport, Message})
 {
+    Message.m = JSON.decycle(Message.m);
+    
     var TransportCache = getAllCaches({Transport, Capability:HandshakerCapability}).Connection;
     TransportCache[SerializersSymbol].forEach(function(s){
        s.onSerialize({Message:Message.m, Cache:getAllCaches({Coterminous, Transport, Capability:s})}); 
     });
+    
     Transport.send(Message);
 }
 

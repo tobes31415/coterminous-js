@@ -1,6 +1,5 @@
 import * as enableLoging from './enableLogging.js';
 
-import * as cycle from './lib/cycle.js';
 import logger from './log.js';
 import {assertType} from './checkType.js';
 import Coterminous from './coterminous.js';
