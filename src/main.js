@@ -13,7 +13,7 @@ var log = logger("main.js");
 
 var l = new loopback();
 
-Coterminous.root({hello:"world",test:function(){return 123;}, echo:function(arg){return arg}})
+Coterminous.root({hello:"world",test:function(){return 123;}, echo:function(arg){return {echo:arg}}})
 
 var myInterface = Coterminous.connectTransport(l.A);
 var remoteInterface = Coterminous.connect(l.B);

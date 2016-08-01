@@ -18,7 +18,7 @@ class LoopbackTransportSide
 {   
     constructor(mine, other)
     {
-        this.send = mine.publish
+        this.send = function(msg){mine.publish(JSON.parse(JSON.stringify(msg)));}
         this.receive = other        
         this.disconnect=function(){}        
         this.disconnected=new Sub();
