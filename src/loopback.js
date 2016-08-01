@@ -1,3 +1,5 @@
+import Sub from './repeatingSubscription.js'
+
 /*
  * This is a simple 2-sided transport to assist in testing and development
  */
@@ -23,32 +25,3 @@ class LoopbackTransportSide
     }
 }
 
-var cbs = Symbol("cbs");
-var lastValue = Symbol("lastValue");
-class Sub
-{
-    constructor ()
-    {
-        this[cbs] = [];
-        this.publish = this._publish.bind(this);
-        this.subscribe = this._subscribe.bind(this);
-    }
-    
-    _publish(obj)
-    {
-        this[lastValue] = obj;
-        this[cbs].forEach(function(cb){cb(obj);})
-    }
-    
-    _subscribe(cb)
-    {
-        this[cbs].push(cb);
-        if(this[lastValue])
-        {
-            cb(this[lastValue]);
-        }
-    }
-    
-    unsubscribe(cb)
-    {}
-}

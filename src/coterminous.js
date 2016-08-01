@@ -1,6 +1,7 @@
 import * as cycle from './lib/cycle.js';
 import logger from './log.js';
 import {assertType} from './checkType.js';
+import getAllCaches from './cache.js';
 var log = logger("Coterminous");
 
 var capabilities_map = {};
@@ -13,9 +14,9 @@ class Coterminous
 var singleton = new Coterminous();
 export default singleton;
 
-export function registerCapability(options)
+export function registerCapability(Capability)
 {
-    assertType(options, {
+    assertType(Capability, {
         name:"string",
         version: "string",
         
@@ -23,19 +24,18 @@ export function registerCapability(options)
         
         onRegister: "?function",
         onDeregister: "?function",
-        
-        onCreateInterface: "?function",
-        onDisposeInterface: "?function",
 
         onConnect: "?function",
         onDisconnect: "?function",
         
-        onSend: "?function",
-        onReceive: "?function"
+        onSerialize: "?function",
+        onDeserialize:"?function",
+        
+        needsChannel : "?boolean"
     });
     
-    var lname = options.name.toLowerCase();
-    var lversion = options.version.toLowerCase();
+    var lname = Capability.name.toLowerCase();
+    var lversion = Capability.version.toLowerCase();
     lname = lname.replace(/:/g,"");
     lversion = lversion.replace(/:/g,"");
     var fname = lname+":"+lversion;
@@ -43,24 +43,24 @@ export function registerCapability(options)
     {
         throw new Error(`Duplicate Registration ${lname}:${lversion}`);
     }
-    options.name = lname;
-    options.version = lversion;
-    options.fname = fname;
-    if (!options.priority){options.priority = 50;}
-    if (options.priority < 1){options.priority=1;}
-    if (options.priority > 100){options.priority=100;}
+    Capability.name = lname;
+    Capability.version = lversion;
+    Capability.fname = fname;
+    if (!Capability.priority){Capability.priority = 50;}
+    if (Capability.priority < 1){Capability.priority=1;}
+    if (Capability.priority > 100){Capability.priority=100;}
     
-    if (options.onSend || options.onReceive)
+    if (Capability.needsChannel)
     {
-        options.channel = channelCount++;
+        Capability.channel = channelCount++;
     }
     try
     {
-        if(options.onRegister)
+        if(Capability.onRegister)
         {
-            options.onRegister({Coterminous:singleton});
+            Capability.onRegister({Coterminous:singleton, Cache:getAllCaches({Coterminous:singleton, Capability})});
         }
-        capabilities_map[fname] = options;
+        capabilities_map[fname] = Capability;
         log.debug(`Registered ${lname}:${lversion}`)
     }
     catch(err)

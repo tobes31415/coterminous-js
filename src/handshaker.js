@@ -2,7 +2,14 @@ import logger from './log.js';
 import {registerCapability, getCapabilities} from './coterminous.js';
 import {assertType} from './checkType.js';
 import getAllCaches from './cache.js';
+import Subcription from './subscription.js';
+import Channel from './channel.js';
 var log = logger("Coterminus-handshaker");
+
+
+var TransportsSymbol = Symbol("transports");
+var channelsSymbol = Symbol("channels");
+
 
 function tryThis(fnRef, ...args)
 {
@@ -21,72 +28,42 @@ function compare(a,b)
     return a===b?0:(a<b?-1:1);
 }
 
-function createInterface({Coterminous})
-{
-    var rpcInterface = new Coterminous_Interface({Coterminous})
-    var temp = getCapabilities()
-    for(let name in temp)
-    {
-        var c = temp[name];
-        if (c.onCreateInterface)
-        {
-            tryThis(c.onCreateInterface, {Cache:getAllCaches({Coterminous, Interface:rpcInterface, Capability:c}), Interface:rpcInterface});
-        }
-    }
-    return rpcInterface;
-}
-
-function disposeInterface(Coterminous, rpcInterface)
-{
-    var temp = getCapabilities()
-    for(let name in temp)
-    {
-        var c = temp[name];
-        if (capability.onDisposeInterface)
-        {
-            tryThis(capability.onDisposeInterface, {Cache:getAllCaches({Coterminous, Interface:rpcInterface, Capability:c}), Interface:rpcInterface});
-        }
-    }
-}
-
-registerCapability({
+var HandshakerCapability = {
     "name":"handshaker",
     "version":"0.0.1",
-    "onRegister":function({Coterminous})
+    "onRegister":function({Coterminous, Cache})
     {
-        Coterminous.createInterface = function()
+        Cache.App[TransportsSymbol] = new WeakMap();
+        Coterminous.connectTransport = function(Transport)
         {
-            return createInterface({Coterminous});
+            return doHandshake({Coterminous,Transport, Cache});
         }       
     } 
-});
+};
+registerCapability(HandshakerCapability);
 
-var channelsSymbol = Symbol("channels");
 
-function processMessage({Coterminous, Interface, Transport, Message})
+function processMessage({Coterminous, Transport, Message})
 {
     try{
         log.debug("Processing a non-handshaking message");
         var cid = Message.c;
-        var temp = getCapabilities();
-        for (let fname in temp)
+        var channels = getAllCaches({Transport, Capability:HandshakerCapability}).Connection[channelsSymbol];
+        var channel=channels[Message.c];
+        var Capability = channel.Capability;
+        if (Capability.onReceive)
         {
-            var c = temp[fname];
-            if (temp[fname].channel === cid)         
-            {
-                if (c.onReceive)
-                {
-                    c.onReceive({Coterminous, Interface, Transport, Channel:Interface[channelsSymbol].get(c), Message:Message.m, Cache:getAllCaches({Coterminous, Interface, Transport, Capability:c})})
-                }
-                return;                
-            }
+            Capability.onReceive({Message:Message.m, Channel:channel, Cache:getAllCaches({Coterminous, Transport, Capability})})
+            return;                
         }
         throw new Error("Channel isn't registered here")
     }
     catch(err){log.error("Failed to process message",err);}
 }
 
-function doHandshake({Coterminous, Interface, Transport})
+
+
+function doHandshake({Coterminous, Transport, Cache})
 {
     assertType(Transport, 
     {
@@ -95,6 +72,12 @@ function doHandshake({Coterminous, Interface, Transport})
         disconnect:"function",
         disconnected:"subscription"
     })
+    
+    if(Cache.App[TransportsSymbol].has(Transport))
+    {
+        throw new Error("Duplicate Connection Attempt");
+    }
+    Cache.App[TransportsSymbol].set(Transport, true);
     
     var result = new Promise(function(resolve, reject)
     {
@@ -120,8 +103,9 @@ function doHandshake({Coterminous, Interface, Transport})
                 if (msg.c && msg.c !== 0){return;}
                 log.debug("received a reply");
                 Transport.receive.unsubscribe(processHandshakeMessage);
+                Transport.receive.clear();
                 Transport.receive.subscribe(function(Message){
-                    processMessage({Coterminous, Interface, Transport, Message})
+                    processMessage({Coterminous, Transport, Message})
                 });
                 var mine = Object.keys(temp);
                 var theirs = Object.keys(msg);
@@ -146,18 +130,19 @@ function doHandshake({Coterminous, Interface, Transport})
                 }
                 sorted.sort(function(c1,c2){return compare(c1.priority, c2.priority);});
                 log.debug("The following capabilities have been selected", sorted);
-                var channels = Interface[channelsSymbol]=new WeakMap();
+                var TransportCache = getAllCaches({Transport, Capability:HandshakerCapability}).Connection;
+                var channels = TransportCache[channelsSymbol]={};
                 sorted.forEach(function(capability)
                 {
-                    var channel = new Channel({Interface, Transport, ChannelId:msg[capability.fname].c});
                     if (capability.channel)
                     {
-                        
-                        channels.set(capability, channel);
+                        var channel = new Channel({Transport, LocalChannelId:capability.channel, RemoteChannelId:msg[capability.fname].c, Capability:capability});
+                    
+                        channels[capability.channel]=channel;
                     }
                     if (capability.onConnect)
                     {
-                        tryThis(capability.onConnect, {Coterminous, Interface, Channel: channel, Cache:getAllCaches({Coterminous, Interface, Transport, Capability:capability})});
+                        tryThis(capability.onConnect, {Channel: channel, Cache:getAllCaches({Coterminous, Transport, Capability:capability})});
                     }
                 });
                 log.debug("handshaking complete");
@@ -175,39 +160,3 @@ function doHandshake({Coterminous, Interface, Transport})
     });
     return result;
 }
-
-import logger from './log.js';
-
-var channelLog = logger("Channels");
-var InterfaceSymbol = Symbol("Interface");
-var TransportSymbol = Symbol("Transport");
-var ChannelIdSymbol = Symbol("ChannelId");
-class Channel
-{
-    constructor({Interface, Transport, ChannelId}){
-        this[InterfaceSymbol] = Interface;
-        this[TransportSymbol] = Transport;
-        this[ChannelIdSymbol] = ChannelId
-    }
-    
-    //sends a message, using the full stack to serialize it, returns a promise
-    send(msg){
-        channelLog.debug("Sending ", msg, "on Channel ", this[ChannelIdSymbol]);
-        this[TransportSymbol].send({c:this[ChannelIdSymbol], m:msg})
-    }
-}
-
-var CoterminousSymbol = Symbol("Coterminous");
-class Coterminous_Interface
-{
-    constructor(Coterminous)
-    {
-        this[CoterminousSymbol]= Coterminous;
-    }
-    
-    connect(Transport)
-    {
-        return doHandshake({Coterminous:this[CoterminousSymbol],Interface:this, Transport});
-    }
-}
-

@@ -10,49 +10,44 @@ var channelSymbol = Symbol("channel");
 var Capability = {
     "name":"root",
     "version":"0.0.1",
-    "onRegister":function({Coterminous})
+    "needsChannel":true,
+    "onRegister":function({Coterminous, Cache})
     {
         log.debug("onRegister");
-        Coterminous.connect = function(transport)
+        Coterminous.connect = function(Transport)
         {
             log.debug("Coterminous.connect");
-            var Interface = Coterminous.createInterface();
-            return Interface.connect(transport).then(function()
+            return Coterminous.connectTransport(Transport).then(function()
             {
-                var Cache = getAllCaches({Interface, Capability});
-                Cache.Interface[remoteRootPromise] = new Deferred();
-                Cache.Interface[channelSymbol].send({"sendRoot":true});
-                return Cache.Interface[remoteRootPromise].promise;
+                var Cache = getAllCaches({Transport, Capability});
+                Cache.Connection[remoteRootPromise] = new Deferred();
+                Cache.Connection[channelSymbol].send({"sendRoot":true});
+                return Cache.Connection[remoteRootPromise].promise;
             })
         }
-    },
-    "onCreateInterface":function({Interface, Cache})
-    {
-        log.debug("onCreateInterface");
-        Interface.root = function(newObjRoot)
+        Coterminous.root = function(newObjRoot)
         {
-            log.debug("Interface.root", newObjRoot);
-            Cache.Interface[rootObjectSymbol] = newObjRoot;
+            log.debug("Coterminous.root", newObjRoot);
+            Cache.App[rootObjectSymbol] = newObjRoot;
         }
     },
-    "onConnect":function({Cache, Interface, Channel})
+    "onConnect":function({Cache, Channel})
     {
         log.debug("onConnect");
-        Cache.Interface[channelSymbol]=Channel;
-        
+        Cache.Connection[channelSymbol]=Channel;
     },
-    "onReceive":function({Cache, Channel, Interface, Message})
+    "onReceive":function({Cache, Channel, Message})
     {
         log.debug("onReceive", Message);
         if (Message.sendRoot)
         {
             log.debug("Responding to root request")
-            Channel.send(Cache.Interface[rootObjectSymbol]);
+            Channel.send(Cache.App[rootObjectSymbol]);
         }
         else
         {
             log.debug("Received a remote root ", Message)
-            Cache.Interface[remoteRootPromise].resolve(Message);
+            Cache.Connection[remoteRootPromise].resolve(Message);
         }
     }
 }

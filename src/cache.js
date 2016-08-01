@@ -17,11 +17,10 @@ function getScopedCache(obj, scope)
     return scoped;
 }
 
-export default function ({Coterminous, Interface, Transport, Capability})
+export default function ({Coterminous, Transport, Capability})
 {
     var result = {};
     if (Coterminous){result.App = getScopedCache(Coterminous, Capability)}
-    if (Interface){result.Interface = getScopedCache(Interface, Capability)}
     if (Transport){result.Connection = getScopedCache(Transport, Capability)}
     return result;
 }
