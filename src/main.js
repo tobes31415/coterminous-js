@@ -9,6 +9,7 @@ import * as rootInterface from './rootInterface.js';
 import * as functionPassing from './functionPassing.js';
 import * as promisePassing from './promisePassing.js';
 import * as datePassing from './datePassing.js';
+import * as regexPassing from './regexPassing.js';
 
 var log = logger("main.js");
 
