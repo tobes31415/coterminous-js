@@ -1199,7 +1199,6 @@
 
 
 	var log = /* harmony import */ __WEBPACK_IMPORTED_MODULE_0__log_js__["a"]("subscriptionPassing");
-	log.debug();
 	var subscriptionRefIdCount = 1;
 	var Capability = {
 	    "name":"subscriptionPassing",
