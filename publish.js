@@ -7,3 +7,9 @@ import * as datePassing from './src/datePassing.js';
 import * as regexPassing from './src/regexPassing.js';
 import * as subscriptionPassing from './src/subscriptionPassing.js';
 export default Coterminous;
+
+try
+{
+    (function(){return this})().Coterminous = Coterminous;
+}
+catch(ignored){}
