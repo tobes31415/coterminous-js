@@ -5,7 +5,6 @@ import {checkType} from './checkType.js';
 import Deferred from './deferred.js';
 import Subscription from './subscription.js';
 var log = logger("subscriptionPassing");
-log.debug();
 var subscriptionRefIdCount = 1;
 var Capability = {
     "name":"subscriptionPassing",
