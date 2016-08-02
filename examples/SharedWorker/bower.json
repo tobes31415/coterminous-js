@@ -1,0 +1,13 @@
+{
+  "name": "coterminous-js-example-sharedworker",
+  "description": "An example that uses Shared Webworker and Coterminous to call across browser tabs",
+  "authors": [
+    "Jake Tober <jake@macadamian.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "coterminous-js": "^0.1.7",
+    "coterminous-js-messageport": "^0.1.7"
+  },
+  "private": true
+}

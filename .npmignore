@@ -2,6 +2,7 @@ bin
 bower
 node_modules
 src
+examples
 .gitignore
 .npmignore
 *.json

@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Coterminous Demo</title>
+<script src='enableLogging.js'></script>
+<script src='bower_components\coterminous-js\bower\coterminous.js'></script>
+<script src='bower_components\coterminous-js-messageport\bower\messageport.js'></script>
+</head>
+<body>
+<pre id="Log">Log:</pre>
+<input id="Msg" type="text">
+<button onclick="remoteInterface.send(Msg.value)">Send</button>
+<script>
+  var worker = new SharedWorker('chatServer.js');
+  Coterminous.connect(new Coterminous_MessagePort(worker.port)).then(function(remoteInterface)
+  {
+    window.remoteInterface = remoteInterface;
+    remoteInterface.messages.subscribe(function(msg)
+    {
+        Log.textContent += "\n"+ msg;
+    });
+  });
+</script>
+</body>
+</html>
