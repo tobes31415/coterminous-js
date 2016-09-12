@@ -1,7 +1,7 @@
 import logger from './log.js';
 var log = logger("Subscription");
 
-export default class
+class Subscription
 {
     constructor ()
     {
@@ -35,3 +35,5 @@ export default class
         };
     }
 }
+
+export default (Subscription);
