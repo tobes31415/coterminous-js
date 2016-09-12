@@ -8,7 +8,14 @@ function walkObject(obj, condition, onFind)
             var replace = onFind(val);
             if (typeof replace !== "undefined")
             {
-                obj[key]=replace;
+                if (typeof replace === "object" && replace.__$replaceByUndefined)
+                {
+                    obj[key]=undefined;
+                }
+                else
+                {
+                    obj[key]=replace;
+                }
             }
         }
         else

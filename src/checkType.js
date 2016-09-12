@@ -41,6 +41,7 @@ export function checkType(expected, actual)
         expected = expected.toLowerCase();
         switch(expected)
         {
+            case "undefined":
             case "number":
             case "boolean":
             case "string":
