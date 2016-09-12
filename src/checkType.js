@@ -56,7 +56,7 @@ export function checkType(expected, actual)
                 return checkType({"getTime":"function"}, actual);
             case "regex":
             case "regexp":
-                return checkType({"test":"function","exec":"function"}, actual);
+                return checkType({"test":"function","exec":"function","source":"string","flags":"string"}, actual);
             case "object":
                 return typeof actual === expected && actual !== null;
             default:
