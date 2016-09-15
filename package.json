@@ -1,13 +1,20 @@
 {
   "name": "coterminous-js",
   "version": "0.2.0",
+  "author": "Jake Tober <jake@macadamian.com>",
+  "license": "MIT",
   "description": "Blurs the boundary between javascript contexts, allowing function refrences, promises, subscriptions to be passed as easily as strings numbers and all the rest",
   "main": "npm/coterminous.js",
   "dependencies": {},
   "devDependencies": {
+    "babel": "6.5.2",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-register": "^6.14.0",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.3.2",
     "gulp-webserver": "^0.9.1",
+    "istanbul": "^0.4.5",
+    "mocha": "^2.0.1",
     "run-sequence": "^1.2.2",
     "webpack": "^2.0.7-beta"
   },
@@ -16,13 +23,14 @@
     "url": "https://github.com/tobes31415/coterminous-js"
   },
   "scripts": {
-    "start": "gulp start"
+    "start": "gulp start",
+    "test": "mocha --compilers js:babel-core/register",
+    "coverage": "istanbul cover _mocha -- -R spec --compilers js:babel-register"
+
   },
   "keywords": [
     "webpack",
     "es6",
     "rpc"
-  ],
-  "author": "Jake Tober <jake@macadamian.com>",
-  "license": "MIT"
+  ]
 }
