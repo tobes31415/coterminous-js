@@ -16,11 +16,11 @@ import * as regexPassing from './src/regexPassing.js';
 import * as undefinedPassing from './src/undefinedPassing.js';
 import * as subscriptionPassing from './src/subscriptionPassing.js';
 import * as loopback from './bower_components/coterminous-js-loopback/bower/loopback.js';
-
+import global from './src/global.js';
 import {register, dispose} from './src/manualDispose.js';
 
-window.register = register;
-window.dispose = dispose;
+global.register = register;
+global.dispose = dispose;
 
 var log = logger("main.js");
 
@@ -46,5 +46,5 @@ var remoteInterface = Coterminous.connect(l.B);
 
 remoteInterface.then(function(ri)
 {
-  window.ri = ri;
+  global.ri = ri;
 });

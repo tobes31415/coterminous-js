@@ -1,20 +1,22 @@
+import global from './global.js';
+
 export default function logger(name)
 {
     var prefix = `[${name}]`;
     
     var isBrowser = false;
-    try{isBrowser = window && window.console;}
+    try{isBrowser = global && global.console;}
     catch(ignored){}
 
     var log;
     if (isBrowser)
     {
         log = {
-            debug: window.console.debug.bind(window.console, prefix),
-            warn: window.console.warn.bind(window.console, prefix),
-            error: window.console.error.bind(window.console, prefix),
-            info: window.console.info.bind(window.console, prefix),
-            trace: window.console.trace.bind(window.console, prefix)
+            debug: global.console.debug.bind(global.console, prefix),
+            warn: global.console.warn.bind(global.console, prefix),
+            error: global.console.error.bind(global.console, prefix),
+            info: global.console.info.bind(global.console, prefix),
+            trace: global.console.trace.bind(global.console, prefix)
         }
     }
     else
@@ -27,7 +29,7 @@ export default function logger(name)
             trace: console.log.bind(console, '[TRACE]'+prefix),
         }
     }
-    if (isBrowser && !window.enableCoterminusLogs || !global.enableCoterminusLogs)
+    if (isBrowser && !global.enableCoterminusLogs || !global.enableCoterminusLogs)
     {
         log.debug = function(){};
         log.warn = log.debug;

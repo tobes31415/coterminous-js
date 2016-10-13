@@ -7,10 +7,12 @@ import * as datePassing from './src/datePassing.js';
 import * as regexPassing from './src/regexPassing.js';
 import * as undefinedPassing from './src/undefinedPassing.js';
 import * as subscriptionPassing from './src/subscriptionPassing.js';
+
+import global from './src/global.js';
 export default Coterminous;
 
 try
 {
-    (function(){return this})().Coterminous = Coterminous;
+    global.Coterminous = Coterminous;
 }
 catch(ignored){}
