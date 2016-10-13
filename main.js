@@ -17,6 +17,11 @@ import * as undefinedPassing from './src/undefinedPassing.js';
 import * as subscriptionPassing from './src/subscriptionPassing.js';
 import * as loopback from './bower_components/coterminous-js-loopback/bower/loopback.js';
 
+import {register, dispose} from './src/manualDispose.js';
+
+window.register = register;
+window.dispose = dispose;
+
 var log = logger("main.js");
 
 
