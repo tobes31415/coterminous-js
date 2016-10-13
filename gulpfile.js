@@ -3,6 +3,7 @@ var clean = require('gulp-clean');
 var webpack = require('webpack');
 var runSequence = require('run-sequence');
 var webserver = require('gulp-webserver');
+var run = require('gulp-run');
 
 gulp.task('clean', function(){
     return gulp.src('bin', {read:false}).pipe(clean())
@@ -93,5 +94,11 @@ gulp.task('watch', function(){
 gulp.task('publish', function(done){
     runSequence('clean', ['build-bower','build-npm'])
 })
+
+gulp.task('runTest', function(done){
+    return run("mocha --use_strict --compilers js:babel-core/register").exec();
+});
+
+gulp.task('test', ['publish', 'runTest']);
 
 gulp.task('default',['start']);

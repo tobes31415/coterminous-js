@@ -25,7 +25,7 @@
   },
   "scripts": {
     "start": "gulp start",
-    "test": "mocha --use_strict --compilers js:babel-core/register",
+    "test": "gulp test",
     "coverage": "node --use_strict ./node_modules/.bin/istanbul cover _mocha -- --compilers js:babel-core/register test/index.js"
   },
   "keywords": [
