@@ -13,6 +13,11 @@ gulp.task('copyIndex', function(){
     gulp.dest("./bin"))
 });
 
+gulp.task('copyIcon', function(){
+    return gulp.src(["./favicon.ico"]).pipe(
+    gulp.dest("./bin"))
+});
+
 function packFiles(entryFilename, outputPath, outputFilename, debug, callback)
 {
     var options = {
@@ -68,7 +73,7 @@ gulp.task('build-bower', function(callback){
 })
 
 gulp.task('build', function(done){
-    runSequence('webpack-dev', 'copyIndex', done);
+    runSequence('webpack-dev', 'copyIndex', 'copyIcon', done);
 });
 gulp.task('build-clean', function(done){
     runSequence('clean', 'build', done);
