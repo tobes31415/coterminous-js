@@ -17,9 +17,9 @@ import * as undefinedPassing from './src/undefinedPassing.js';
 import * as subscriptionPassing from './src/subscriptionPassing.js';
 import * as loopback from './bower_components/coterminous-js-loopback/bower/loopback.js';
 import global from './src/global.js';
-import {register, dispose} from './src/manualDispose.js';
+import {registerDispose, dispose} from './src/manualDispose.js';
 
-global.register = register;
+global.registerDispose = registerDispose;
 global.dispose = dispose;
 
 var log = logger("main.js");

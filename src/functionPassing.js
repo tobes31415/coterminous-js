@@ -3,6 +3,7 @@ import {registerCapability} from './coterminous.js';
 import walkObject from './walkObject.js';
 import {checkType} from './checkType.js';
 import Deferred from './deferred.js';
+import {dispose, registerDispose, registerDisposeChain} from './manualDispose.js';
 var log = logger("functionPassing");
 
 var fnRefIdCount = 1;
@@ -49,11 +50,21 @@ var Capability = {
             Cache.Connection.Responses[Message.reject].reject(... Message.args);
             delete Cache.Connection.Responses[Message.reject];            
         }
+        else if (Message.forget)
+        {
+            var fn = Cache.Connection.Remote[Message.forget];
+            dispose(fn);
+            delete Cache.Connection.Remote[Message.forget];
+        }
     },
     "onConnect":function({Cache, Channel})
     {
         Cache.Connection.Local = {};
+        registerDispose(Cache.Connection.Local, function(){
+            //do not allow dispose to propogate here as it can affect other transports
+        });
         Cache.Connection.LocalReverse = new WeakMap();
+        Cache.Connection.DisposeList = [];
         Cache.Connection.Remote = {};
         Cache.Connection.Channel = Channel;
         Cache.Connection.Responses = {};
@@ -68,6 +79,12 @@ var Capability = {
                 id = fnRefIdCount++;
                 Cache.Connection.LocalReverse.set(fn,id);
                 Cache.Connection.Local[id]=fn;
+                var token = {};
+                registerDispose(token, disposeProxy.bind(null, Cache, id));
+                Cache.Connection.DisposeList.push(token);
+                
+                //if the function itself is ever disposed we want to trigger the dispose action on each transport it's used in
+                registerDisposeChain(fn, token);
             }
             return {"$fnRef":id};
         });
@@ -92,6 +109,12 @@ function remoteProxy(Cache, fnRef, ...args)
     var result = Cache.Connection.Responses[responseId] = new Deferred();
     Cache.Connection.Channel.send({invoke:fnRef, args:args, respondTo:responseId});
     return result.promise;
+}
+function disposeProxy(Cache, fnRef)
+{
+    Cache.Connection.Channel.send({forget:fnRef});
+    Cache.Connection.LocalReverse.delete(Cache.Connection.Local[fnRef]);
+    delete Cache.Connection.Local[fnRef];
 }
 
 export default {};

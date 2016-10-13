@@ -2,6 +2,7 @@ import logger from './log.js';
 import {registerCapability, getCapabilities} from './coterminous.js';
 import {assertType} from './checkType.js';
 import getAllCaches from './cache.js';
+import {disposeRoot} from './cache.js';
 import Subcription from './subscription.js';
 import * as cycle from './lib/cycle.js';
 
@@ -123,6 +124,11 @@ function doHandshake({Coterminous, Transport, Cache})
         throw new Error("Duplicate Connection Attempt");
     }
     Cache.App[TransportsSymbol].set(Transport, true);
+    
+    Transport.disconnected.subscribe(function()
+    {
+        disposeRoot(Transport);
+    });
     
     var result = new Promise(function(resolve, reject)
     {

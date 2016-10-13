@@ -1,3 +1,5 @@
+import {dispose} from './manualDispose.js';
+
 var cacheStorage = new WeakMap();
 function getScopedCache(obj, scope)
 {
@@ -23,5 +25,15 @@ export default function ({Coterminous, Transport, Capability})
     if (Coterminous){result.App = getScopedCache(Coterminous, Capability)}
     if (Transport){result.Connection = getScopedCache(Transport, Capability)}
     return result;
+}
+
+export function disposeRoot(obj)
+{
+    var cache = cacheStorage.get(obj);
+    if (cache)
+    {
+        dispose(cache);
+        cacheStorage.delete(obj);
+    }
 }
 
