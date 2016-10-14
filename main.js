@@ -19,6 +19,7 @@ import * as loopback from './bower_components/coterminous-js-loopback/bower/loop
 import deferred from './src/deferred.js';
 import StrongMap from './src/strongMap.js';
 import global from './src/global.js';
+import subscription from './src/subscription.js';
 import {registerDispose, dispose} from './src/manualDispose.js';
 
 global.registerDispose = registerDispose;
@@ -29,6 +30,7 @@ global.foo = new StrongMap();
 global.bar = {};
 global.registerDispose(bar, function(){console.log("bar was disposed")});
 global.foo.set(bar, 123);
+global.subscription = subscription;
 
 var log = logger("main.js");
 

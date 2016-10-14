@@ -8,7 +8,7 @@ class Subscription
     {
         var self = this;
         var cbs = [];
-        this.publish = function(obj)
+        self.publish = function(obj)
         {
             assertNotDisposed(self);
             cbs.forEach(function(cb)
@@ -17,7 +17,7 @@ class Subscription
                 catch(err){log.error(err);}
             });
         }
-        this.subscribe = function(cb)
+        self.subscribe = function(cb)
         {
             assertNotDisposed(self);
             if (cbs.indexOf(cb) === -1)
@@ -25,7 +25,7 @@ class Subscription
                 cbs.push(cb);
             }
         }
-        this.unsubscribe = function(cb)
+        self.unsubscribe = function(cb)
         {
             assertNotDisposed(self);
             var index = cbs.indexOf(cb);
@@ -34,13 +34,17 @@ class Subscription
                 cbs.splice(index, 1);
             }
         }
-        this.readOnly = {
-            subscribe: this.subscribe,
-            unsubscribe: this.unsubscribe
+        self.readOnly = {
+            subscribe: self.subscribe,
+            unsubscribe: self.unsubscribe
         };
         
-        registerDispose(this, function(){
+        registerDispose(self, function(){
             dispose(cbs);
+            dispose(self.subscribe);
+            dispose(self.unsubscribe);
+            dispose(self.publish);
+            dispose(self.readOnly);
             cbs = null;
         });
     }

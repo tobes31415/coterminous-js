@@ -35,12 +35,16 @@ var Capability = {
         walkObject(Message, checkType.bind(null, "subscription"), function(subscription)
         {
             var id;
-            if (!Cache.Connection.LocalReverse.has(subscription))
+            if (!Cache.Connection.LocalReverse.has(subscription.subscribe))
             {
                 id = subscriptionRefIdCount++;
-                Cache.Connection.LocalReverse.set(subscription,id);
+                Cache.Connection.LocalReverse.set(subscription.subscribe,id);
                 subscription.subscribe(sendPublish.bind(null, Cache, id));
-                linkDisposeFunction(Cache, subscription, id);
+                linkDisposeFunction(Cache, subscription.subscribe, id);
+            }
+            else
+            {
+                id = Cache.Connection.LocalReverse.get(subscription.subscribe);
             }
             return {"$subscription":id};
         });
