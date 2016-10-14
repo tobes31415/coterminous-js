@@ -214,6 +214,7 @@ function doHandshake({Coterminous, Transport, Cache})
                 resolve();
                 function advancedDispose()
                 {
+                    dispose(Transport);
                     sorted.forEach(function(capability)
                     {
                        if (capability.onDisconnect) 
@@ -223,6 +224,7 @@ function doHandshake({Coterminous, Transport, Cache})
                     });
                     
                     disposeRoot(Transport);
+                    channels = null;
                 }
                 Transport.disconnected.unsubscribe(basicDispose);
                 Transport.disconnected.subscribe(advancedDispose);

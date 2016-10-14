@@ -65,7 +65,6 @@ var Capability = {
         registerDispose(Cache.Connection, function(){
             dispose(Cache.Connection.DisposeList);
             dispose(Cache.Connection.Remote);
-            dispose(Cache.Connection.Channel);
             dispose(Cache.Connection.Responses);
         });
 

@@ -4,6 +4,7 @@ import walkObject from './walkObject.js';
 import {checkType} from './checkType.js';
 import Deferred from './deferred.js';
 import StrongMap from './strongMap.js';
+import {registerDispose, dispose} from './manualDispose.js';
 var log = logger("promisePassing");
 var promiseRefIdCount = 1;
 var Capability = {
@@ -28,6 +29,10 @@ var Capability = {
         Cache.Connection.LocalReverse = new StrongMap();
         Cache.Connection.Remote = {};
         Cache.Connection.Channel = Channel;
+        registerDispose(Cache.Connection, function(){
+            //don't allow LocalReverse to be disposed as the local reference could have been used by multiple transports
+            dispose(Cache.Connection.Remote);
+        });
     },
     "onSerialize":function({Message, Cache})
     {

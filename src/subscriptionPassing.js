@@ -29,6 +29,10 @@ var Capability = {
         Cache.Connection.LocalReverse = new StrongMap();
         Cache.Connection.Remote = {};
         Cache.Connection.Channel = Channel;
+        registerDispose(Cache.Connection, function(){
+            //don't allow LocalReverse to be disposed as the subscriptions may be in use elsewhere
+            dispose(Cache.Connection.Remote);
+        });
     },
     "onSerialize":function({Message, Cache})
     {
