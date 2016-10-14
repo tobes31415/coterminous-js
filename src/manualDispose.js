@@ -31,6 +31,22 @@ export function registerDisposeChain(objPrimary, objSecondary)
     registerDispose(objPrimary, dispose.bind(null, objSecondary));
 }
 
+export function disposable(fnRef)
+{
+    var disposableFnRef = function(...args)
+    {
+        if (disposableFnRef[disposedSymbol])
+        {
+            throw new Error("Function has been disposed");
+        }
+        return fnRef(...args);
+    }
+    registerDispose(disposableFnRef, function(){
+        fnRef = null;
+    });
+    return disposableFnRef;
+}
+
 export function dispose(obj)
 {
     if (!obj || obj[disposedSymbol])

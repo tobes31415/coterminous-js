@@ -3,7 +3,7 @@ import {registerCapability} from './coterminous.js';
 import walkObject from './walkObject.js';
 import {checkType} from './checkType.js';
 import Deferred from './deferred.js';
-import {dispose, registerDispose, registerDisposeChain} from './manualDispose.js';
+import {dispose, registerDispose, registerDisposeChain, disposable} from './manualDispose.js';
 import StrongMap from './strongMap.js';
 var log = logger("functionPassing");
 
@@ -96,7 +96,7 @@ var Capability = {
         {
             if(!Cache.Connection.Remote[fn.$fnRef])
             {
-                Cache.Connection.Remote[fn.$fnRef] = remoteProxy.bind(null, Cache, fn.$fnRef);
+                Cache.Connection.Remote[fn.$fnRef] = disposable(remoteProxy.bind(null, Cache, fn.$fnRef));
             }
             return Cache.Connection.Remote[fn.$fnRef];
         });
