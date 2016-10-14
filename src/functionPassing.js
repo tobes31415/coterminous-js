@@ -4,6 +4,7 @@ import walkObject from './walkObject.js';
 import {checkType} from './checkType.js';
 import Deferred from './deferred.js';
 import {dispose, registerDispose, registerDisposeChain} from './manualDispose.js';
+import StrongMap from './strongMap.js';
 var log = logger("functionPassing");
 
 var fnRefIdCount = 1;
@@ -63,7 +64,7 @@ var Capability = {
         registerDispose(Cache.Connection.Local, function(){
             //do not allow dispose to propogate here as it can affect other transports
         });
-        Cache.Connection.LocalReverse = new WeakMap();
+        Cache.Connection.LocalReverse = new StrongMap();
         Cache.Connection.DisposeList = [];
         Cache.Connection.Remote = {};
         Cache.Connection.Channel = Channel;

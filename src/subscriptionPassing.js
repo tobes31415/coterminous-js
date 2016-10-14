@@ -4,6 +4,7 @@ import walkObject from './walkObject.js';
 import {checkType} from './checkType.js';
 import Deferred from './deferred.js';
 import Subscription from './subscription.js';
+import StrongMap from './strongMap.js';
 var log = logger("subscriptionPassing");
 var subscriptionRefIdCount = 1;
 var Capability = {
@@ -19,7 +20,7 @@ var Capability = {
     },
     "onConnect":function({Cache, Channel})
     {
-        Cache.Connection.LocalReverse = new WeakMap();
+        Cache.Connection.LocalReverse = new StrongMap();
         Cache.Connection.Remote = {};
         Cache.Connection.Channel = Channel;
     },

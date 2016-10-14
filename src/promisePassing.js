@@ -3,6 +3,7 @@ import {registerCapability} from './coterminous.js';
 import walkObject from './walkObject.js';
 import {checkType} from './checkType.js';
 import Deferred from './deferred.js';
+import StrongMap from './strongMap.js';
 var log = logger("promisePassing");
 var promiseRefIdCount = 1;
 var Capability = {
@@ -24,7 +25,7 @@ var Capability = {
     },
     "onConnect":function({Cache, Channel})
     {
-        Cache.Connection.LocalReverse = new WeakMap();
+        Cache.Connection.LocalReverse = new StrongMap();
         Cache.Connection.Remote = {};
         Cache.Connection.Channel = Channel;
     },

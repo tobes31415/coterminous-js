@@ -1,12 +1,13 @@
 import {dispose} from './manualDispose.js';
+import StrongMap from './strongMap.js';
 
-var cacheStorage = new WeakMap();
+var cacheStorage = new StrongMap();
 function getScopedCache(obj, scope)
 {
     var cache = cacheStorage.get(obj);
     if (!cache)
     {
-        cache = new WeakMap();
+        cache = new StrongMap();
         cacheStorage.set(obj, cache);
     }
     

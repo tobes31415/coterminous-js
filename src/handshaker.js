@@ -4,6 +4,7 @@ import {assertType} from './checkType.js';
 import getAllCaches from './cache.js';
 import {disposeRoot} from './cache.js';
 import Subcription from './subscription.js';
+import StrongMap from './strongMap.js';
 import * as cycle from './lib/cycle.js';
 
 var log = logger("Coterminus-handshaker");
@@ -36,7 +37,7 @@ var HandshakerCapability = {
     "version":"0.0.1",
     "onRegister":function({Coterminous, Cache})
     {
-        Cache.App[TransportsSymbol] = new WeakMap();
+        Cache.App[TransportsSymbol] = new StrongMap();
         Coterminous.connectTransport = function(Transport)
         {
             return doHandshake({Coterminous,Transport, Cache:getAllCaches({Coterminous, Transport, Capability:HandshakerCapability})});

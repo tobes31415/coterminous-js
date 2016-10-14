@@ -6,6 +6,14 @@ var log = logger("manualDispose");
 var disposeSymbol = Symbol("dispose");
 var disposedSymbol = Symbol("disposed");
 
+export function assertNotDisposed(obj)
+{
+    if (obj[disposedSymbol])
+    {
+        throw new Error("This object has been disposed");
+    }
+}
+
 export function registerDispose(obj, cb)
 {
     if (!checkType("object", obj) && !checkType("function", obj)){throw new Error("register dispose requires an object or a function");}
