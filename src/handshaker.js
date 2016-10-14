@@ -126,10 +126,11 @@ function doHandshake({Coterminous, Transport, Cache})
     }
     Cache.App[TransportsSymbol].set(Transport, true);
     
-    Transport.disconnected.subscribe(function()
+    function basicDispose()
     {
         disposeRoot(Transport);
-    });
+    }
+    Transport.disconnected.subscribe(basicDispose);
     
     var result = new Promise(function(resolve, reject)
     {
@@ -206,6 +207,20 @@ function doHandshake({Coterminous, Transport, Cache})
                 Cache.Connection[SerializersSymbol] = serializers;
                 Cache.Connection[DeserializersSymbol]= deserializers;
                 resolve();
+                function advancedDispose()
+                {
+                    sorted.forEach(function(capability)
+                    {
+                       if (capability.onDisconnect) 
+                       {
+                           tryThis(capability.onDisconnect, {Channel:channel, Cache:getAllCaches({Coterminous, Transport, Capability:capability})})
+                       }
+                    });
+                    
+                    disposeRoot(Transport);
+                }
+                Transport.disconnected.unsubscribe(basicDispose);
+                Transport.disconnected.subscribe(advancedDispose);
             }
             catch(err)
             {reject(err);}

@@ -1,3 +1,5 @@
+import {dispose, registerDispose} from './manualDispose.js';
+
 export default class
 {
     constructor ()
@@ -8,5 +10,11 @@ export default class
             self.reject = reject;
         });
         self.promise = promise;
+        
+        var cleanup = function(){
+            dispose(self);
+        };
+        registerDispose(self, self.reject);
+        promise.then(cleanup, cleanup);
     }
 }

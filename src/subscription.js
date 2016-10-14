@@ -1,3 +1,4 @@
+import {registerDispose, dispose, assertNotDisposed} from './manualDispose.js';
 import logger from './log.js';
 var log = logger("Subscription");
 
@@ -5,9 +6,11 @@ class Subscription
 {
     constructor ()
     {
+        var self = this;
         var cbs = [];
         this.publish = function(obj)
         {
+            assertNotDisposed(self);
             cbs.forEach(function(cb)
             {
                 try{cb(obj);}
@@ -16,6 +19,7 @@ class Subscription
         }
         this.subscribe = function(cb)
         {
+            assertNotDisposed(self);
             if (cbs.indexOf(cb) === -1)
             {
                 cbs.push(cb);
@@ -23,6 +27,7 @@ class Subscription
         }
         this.unsubscribe = function(cb)
         {
+            assertNotDisposed(self);
             var index = cbs.indexOf(cb);
             if (index !== -1)
             {
@@ -33,6 +38,11 @@ class Subscription
             subscribe: this.subscribe,
             unsubscribe: this.unsubscribe
         };
+        
+        registerDispose(this, function(){
+            dispose(cbs);
+            cbs = null;
+        });
     }
 }
 

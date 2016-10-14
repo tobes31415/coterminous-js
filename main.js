@@ -16,6 +16,7 @@ import * as regexPassing from './src/regexPassing.js';
 import * as undefinedPassing from './src/undefinedPassing.js';
 import * as subscriptionPassing from './src/subscriptionPassing.js';
 import * as loopback from './bower_components/coterminous-js-loopback/bower/loopback.js';
+import deferred from './src/deferred.js';
 import StrongMap from './src/strongMap.js';
 import global from './src/global.js';
 import {registerDispose, dispose} from './src/manualDispose.js';
@@ -23,7 +24,7 @@ import {registerDispose, dispose} from './src/manualDispose.js';
 global.registerDispose = registerDispose;
 global.dispose = dispose;
 global.StrongMap = StrongMap;
-
+global.deferred = deferred;
 global.foo = new StrongMap();
 global.bar = {};
 global.registerDispose(bar, function(){console.log("bar was disposed")});
@@ -31,13 +32,18 @@ global.foo.set(bar, 123);
 
 var log = logger("main.js");
 
-
-Coterminous.root(
-{
+var theRoot = {
   hello: "world",
   test: function()
   {
     return 123;
+  },
+  abc :{
+    def:{
+        ghi: function(){
+            console.log("jkl");
+        }
+    }  
   },
   echo: function(...args)
   {
@@ -45,7 +51,9 @@ Coterminous.root(
       echo: args
     };
   }
-});
+};
+Coterminous.root(theRoot);
+global.theRoot = theRoot;
 
 var l = new Coterminous_Loopback();
 var myInterface = Coterminous.connectTransport(l.A);

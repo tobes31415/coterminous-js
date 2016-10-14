@@ -5,6 +5,7 @@ import {checkType} from './checkType.js';
 import Deferred from './deferred.js';
 import Subscription from './subscription.js';
 import StrongMap from './strongMap.js';
+import {dispose, registerDispose} from './manualDispose.js';
 var log = logger("subscriptionPassing");
 var subscriptionRefIdCount = 1;
 var Capability = {
@@ -16,6 +17,11 @@ var Capability = {
         if (Message.publish)
         {
             Cache.Connection.Remote[Message.publish].publish(... Message.args);
+        }
+        else if (Message.forget)
+        {
+            dispose(Cache.Connection.Remote[Message.forget]);
+            delete Cache.Connection.Remote[Message.forget];
         }
     },
     "onConnect":function({Cache, Channel})
@@ -34,6 +40,7 @@ var Capability = {
                 id = subscriptionRefIdCount++;
                 Cache.Connection.LocalReverse.set(subscription,id);
                 subscription.subscribe(sendPublish.bind(null, Cache, id));
+                linkDisposeFunction(Cache, subscription, id);
             }
             return {"$subscription":id};
         });
@@ -51,6 +58,15 @@ var Capability = {
     }
 }
 registerCapability(Capability);
+
+function linkDisposeFunction(Cache, subscription, subscriptionRef)
+{
+    registerDispose(subscription, function()
+    {
+        Cache.Connection.Channel.send({forget:subscriptionRef});
+        delete Cache.Connection.Remote[subscriptionRef];
+    });
+}
 
 function sendPublish(Cache, subscriptionRef, ...args)
 {
