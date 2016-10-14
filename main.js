@@ -16,6 +16,7 @@ import * as regexPassing from './src/regexPassing.js';
 import * as undefinedPassing from './src/undefinedPassing.js';
 import * as subscriptionPassing from './src/subscriptionPassing.js';
 import * as loopback from './bower_components/coterminous-js-loopback/bower/loopback.js';
+import * as externalDisposing from './src/externalDisposing.js';
 import deferred from './src/deferred.js';
 import StrongMap from './src/strongMap.js';
 import global from './src/global.js';
@@ -28,6 +29,7 @@ global.StrongMap = StrongMap;
 global.deferred = deferred;
 global.foo = function(){}
 global.subscription = subscription;
+global.Coterminous = Coterminous;
 
 var log = logger("main.js");
 
