@@ -27,7 +27,6 @@ var Capability = {
         Coterminous.root = function(newObjRoot)
         {
             Cache.App[rootObjectSymbol] = newObjRoot;
-            recursiveRegisterDispose(newObjRoot);
         }
     },
     "onConnect":function({Cache, Channel})
@@ -47,30 +46,4 @@ var Capability = {
     }
 }
 
-function recursiveRegisterDispose(parent, name)
-{
-    console.log("RD", parent, name);
-    if (name)
-    {
-        var value = parent[name];
-        if (typeof value === "object" || typeof value === "function")
-        {
-            registerDispose(value, function()
-            {
-               delete parent[name];
-               Object.values(value).forEach(dispose);
-            });
-            Object.keys(value).forEach(function(key){
-                recursiveRegisterDispose(value, key)
-            });
-        }
-    }
-    else
-    {
-        for (var key in parent)
-        {
-            recursiveRegisterDispose(parent, key);
-        }
-    }
-}
 registerCapability(Capability);

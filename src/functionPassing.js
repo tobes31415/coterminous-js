@@ -61,10 +61,14 @@ var Capability = {
     "onConnect":function({Cache, Channel})
     {
         Cache.Connection.Local = {};
-        registerDispose(Cache.Connection.Local, function(){
-            //do not allow dispose to propogate here as it can affect other transports
-        });
         Cache.Connection.LocalReverse = new StrongMap();
+        registerDispose(Cache.Connection, function(){
+            dispose(Cache.Connection.DisposeList);
+            dispose(Cache.Connection.Remote);
+            dispose(Cache.Connection.Channel);
+            dispose(Cache.Connection.Responses);
+        });
+
         Cache.Connection.DisposeList = [];
         Cache.Connection.Remote = {};
         Cache.Connection.Channel = Channel;
@@ -79,7 +83,7 @@ var Capability = {
             {
                 id = fnRefIdCount++;
                 Cache.Connection.LocalReverse.set(fn,id);
-                Cache.Connection.Local[id]=fn;
+                Cache.Connection.Local[id]=disposable(fn);
                 var token = {};
                 registerDispose(token, disposeProxy.bind(null, Cache, id));
                 Cache.Connection.DisposeList.push(token);

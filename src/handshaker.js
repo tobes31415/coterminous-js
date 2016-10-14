@@ -106,7 +106,7 @@ function _processOutgoingMessageInOrder({Coterminous, Transport, Message})
         }
         catch(err)
         {
-            log.error(`${Capability.fname} threw an Exception while Serializing.`, err)
+            log.error(`${s.fname} threw an Exception while Serializing.`, err)
         }
     });
     log.debug("Sending: ", JSON.stringify(Message))
