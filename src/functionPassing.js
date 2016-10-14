@@ -87,6 +87,10 @@ var Capability = {
                 //if the function itself is ever disposed we want to trigger the dispose action on each transport it's used in
                 registerDisposeChain(fn, token);
             }
+            else
+            {
+                id = Cache.Connection.LocalReverse.get(fn)
+            }
             return {"$fnRef":id};
         });
     },
