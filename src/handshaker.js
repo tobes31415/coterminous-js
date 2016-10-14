@@ -6,6 +6,7 @@ import {disposeRoot} from './cache.js';
 import Subcription from './subscription.js';
 import StrongMap from './strongMap.js';
 import * as cycle from './lib/cycle.js';
+import {isDisposed} from './manualDispose.js';
 
 var log = logger("Coterminus-handshaker");
 
@@ -92,6 +93,10 @@ function processOutgoingMessage({Coterminous, Transport, Message})
 
 function _processOutgoingMessageInOrder({Coterminous, Transport, Message})
 {
+    if (isDisposed(Transport))
+    {
+        return;
+    }
     Message.m = JSON.decycle(Message.m);
     
     var TransportCache = getAllCaches({Transport, Capability:HandshakerCapability}).Connection;

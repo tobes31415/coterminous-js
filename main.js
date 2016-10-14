@@ -55,6 +55,8 @@ Coterminous.root(theRoot);
 global.theRoot = theRoot;
 
 var l = new Coterminous_Loopback();
+l.A.disconnected.subscribe = function(cb){discba = cb;}
+l.B.disconnected.subscribe = function(cb){discbb = cb;}
 var myInterface = Coterminous.connectTransport(l.A);
 var remoteInterface = Coterminous.connect(l.B);
 

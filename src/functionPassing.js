@@ -118,7 +118,7 @@ function remoteProxy(Cache, fnRef, ...args)
 function disposeProxy(Cache, fnRef)
 {
     Cache.Connection.Channel.send({forget:fnRef});
-    Cache.Connection.LocalReverse.delete(Cache.Connection.Local[fnRef]);
+    try{Cache.Connection.LocalReverse.delete(Cache.Connection.Local[fnRef]);}catch(ignored){}
     delete Cache.Connection.Local[fnRef];
 }
 

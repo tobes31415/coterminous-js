@@ -6,12 +6,20 @@ var log = logger("manualDispose");
 var disposeSymbol = Symbol("dispose");
 var disposedSymbol = Symbol("disposed");
 
+const ERROR_OBJECT_DISPOSED = "This object has been disposed";
+const ERROR_FUNCTION_DISPOSED = "This function has been disposed";
+
 export function assertNotDisposed(obj)
 {
     if (obj[disposedSymbol])
     {
-        throw new Error("This object has been disposed");
+        throw new Error(ERROR_OBJECT_DISPOSED);
     }
+}
+
+export function isDisposed(obj)
+{
+    return obj[disposedSymbol];
 }
 
 export function registerDispose(obj, cb)
@@ -37,7 +45,7 @@ export function disposable(fnRef)
     {
         if (disposableFnRef[disposedSymbol])
         {
-            throw new Error("Function has been disposed");
+            throw new Error(ERROR_FUNCTION_DISPOSED);
         }
         return fnRef(...args);
     }
@@ -65,7 +73,16 @@ export function dispose(obj)
             }
             catch(error)
             {
-                log.error(error);
+                var skipError = true;
+                if (error && error.message)
+                {
+                    skipError |= error.message === ERROR_OBJECT_DISPOSED;
+                    skipError |= error.message === ERROR_FUNCTION_DISPOSED;
+                }
+                //if (!skipError)
+                {
+                    log.error(error);
+                }
             }
         });
         delete obj[disposeSymbol];
