@@ -26,10 +26,7 @@ global.registerDispose = registerDispose;
 global.dispose = dispose;
 global.StrongMap = StrongMap;
 global.deferred = deferred;
-global.foo = new StrongMap();
-global.bar = {};
-global.registerDispose(bar, function(){console.log("bar was disposed")});
-global.foo.set(bar, 123);
+global.foo = new deferred();
 global.subscription = subscription;
 
 var log = logger("main.js");

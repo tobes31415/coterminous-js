@@ -34,11 +34,15 @@ var Capability = {
         walkObject(Message, checkType.bind(null, "promise"), function(promise)
         {
             var id;
-            if (!Cache.Connection.LocalReverse.has(promise))
+            if (!Cache.Connection.LocalReverse.has(promise.then))
             {
                 id = promiseRefIdCount++;
-                Cache.Connection.LocalReverse.set(promise,id);
+                Cache.Connection.LocalReverse.set(promise.then,id);
                 promise.then(sendResult.bind(null, Cache, id, true), sendResult.bind(null, Cache, id, false));
+            }
+            else
+            {
+                id = Cache.Connection.LocalReverse.get(promise.then)
             }
             return {"$promise":id};
         });
