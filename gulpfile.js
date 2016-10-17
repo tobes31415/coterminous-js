@@ -96,7 +96,7 @@ gulp.task('publish', function(done){
 })
 
 gulp.task('runTest', function(done){
-    return run("mocha --use_strict --compilers js:babel-core/register").exec();
+    return run("mocha --use_strict --harmony --compilers js:babel-core/register").exec();
 });
 
 gulp.task('test', ['publish', 'runTest']);
