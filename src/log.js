@@ -4,12 +4,8 @@ export default function logger(name)
 {
     var prefix = `[${name}]`;
     
-    var isBrowser = false;
-    try{isBrowser = global && global.console;}
-    catch(ignored){}
-
     var log;
-    if (isBrowser)
+    try
     {
         log = {
             debug: global.console.debug.bind(global.console, prefix),
@@ -19,7 +15,9 @@ export default function logger(name)
             trace: global.console.trace.bind(global.console, prefix)
         }
     }
-    else
+    catch(ignored)
+    {}
+    if(!log)
     {
         log = {
             debug: console.log.bind(console, '[DEBUG]'+prefix),
@@ -29,7 +27,7 @@ export default function logger(name)
             trace: console.log.bind(console, '[TRACE]'+prefix),
         }
     }
-    if (isBrowser && !global.enableCoterminusLogs || !global.enableCoterminusLogs)
+    if (!global.enableCoterminusLogs)
     {
         log.debug = function(){};
         log.warn = log.debug;
