@@ -6,7 +6,7 @@ import {disposeRoot} from './cache.js';
 import Subcription from './subscription.js';
 import StrongMap from './strongMap.js';
 import * as cycle from './lib/cycle.js';
-import {isDisposed} from './manualDispose.js';
+import {isDisposed, dispose} from './manualDispose.js';
 
 var log = logger("Coterminus-handshaker");
 
