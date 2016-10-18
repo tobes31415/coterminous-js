@@ -8,12 +8,12 @@ class Subscription
     {
         var self = this;
         var cbs = [];
-        self.publish = function(obj)
+        self.publish = function(...obj)
         {
             assertNotDisposed(self);
             cbs.forEach(function(cb)
             {
-                try{cb(obj);}
+                try{cb(...obj);}
                 catch(err){log.error(err);}
             });
         }
