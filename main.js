@@ -16,7 +16,7 @@ import * as regexPassing from './src/regexPassing.js';
 import * as undefinedPassing from './src/undefinedPassing.js';
 import * as subscriptionPassing from './src/subscriptionPassing.js';
 import * as loopback from './bower_components/coterminous-js-loopback/bower/loopback.js';
-import * as externalDisposing from './src/externalDisposing.js';
+import * as externalGC from './src/externalGC.js';
 import * as externalUtilities from './src/externalUtilities.js';
 import deferred from './src/deferred.js';
 import StrongMap from './src/strongMap.js';
