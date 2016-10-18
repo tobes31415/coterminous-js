@@ -1,6 +1,6 @@
 {
   "name": "coterminous-js",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": "Jake Tober <jake@macadamian.com>",
   "license": "MIT",
   "description": "Blurs the boundary between javascript contexts, allowing function refrences, promises, subscriptions to be passed as easily as strings numbers and all the rest",
