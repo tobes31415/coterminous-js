@@ -27,6 +27,19 @@ describe('functionPassing', function() {
         });
     });
     
+    it('arguments passed to the proxy are passed to the original', function(done){
+        Coterminous.root({
+            remote: spy
+        });
+
+        connect().then(function(remoteInterface) 
+        {
+            remoteInterface.remote("abc", 123);
+            assert(spy.calledWith("abc", 123));
+            done();
+        });
+    });
+    
     it('When invoking a remote function the caller gets a promise', function(done){
         Coterminous.root({
             remote: spy
@@ -49,6 +62,22 @@ describe('functionPassing', function() {
         connect().then(function(remoteInterface) 
         {
             remoteInterface.remote().then(function(){done();});
+        });
+    });
+    
+    it('the proxy promise resolves with the return value', function(done){
+        var stub = sinon.stub().returns(123);
+        
+        Coterminous.root({
+            remote: stub
+        });
+
+        connect().then(function(remoteInterface) 
+        {
+            remoteInterface.remote().then(function(value){
+                assert.equal(value, 123);
+                done();
+            });
         });
     });
     
