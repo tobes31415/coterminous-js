@@ -6,7 +6,7 @@ var log = logger("external disposing");
 var Capability = {
     "name":"externalDisposing",
     "version":"0.0.1",
-    "needsChannel":false,
+    "localOnly":true,
     "onRegister":function({Coterminous})
     {
         Coterminous.GC = GC;

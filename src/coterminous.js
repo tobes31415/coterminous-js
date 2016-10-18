@@ -31,7 +31,9 @@ export function registerCapability(Capability)
         onSerialize: "?function",
         onDeserialize:"?function",
         
-        needsChannel : "?boolean"
+        needsChannel : "?boolean",
+        
+        localOnly : "?boolean" //capabilities that add helper functions but are not used for remote communication
     }, Capability);
     
     var lname = Capability.name.toLowerCase();
@@ -60,7 +62,10 @@ export function registerCapability(Capability)
         {
             Capability.onRegister({Coterminous:singleton, Cache:getAllCaches({Coterminous:singleton, Capability})});
         }
-        capabilities_map[fname] = Capability;
+        if (!Capability.localOnly)
+        {
+            capabilities_map[fname] = Capability;
+        }
         log.debug(`Registered ${lname}:${lversion}`)
     }
     catch(err)
